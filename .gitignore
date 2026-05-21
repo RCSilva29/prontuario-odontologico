@@ -1,0 +1,27 @@
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Spring
+target/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Banco
+postgres-data/
+
+# Uploads
+anexos/
+
+# Backups
+backups/
+
+# Docker
+.env
