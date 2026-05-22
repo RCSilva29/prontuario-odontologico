@@ -73,3 +73,13 @@ th {
 .excluir {
   background: #fee2e2;
 }
+
+.link-paciente {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-paciente:hover {
+  text-decoration: underline;
+}

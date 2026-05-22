@@ -1,0 +1,87 @@
+<section class="anamnese-card">
+  <div class="card-header">
+    <div>
+      <h2>Anamnese</h2>
+      <p>Histórico de saúde e informações clínicas do paciente</p>
+    </div>
+
+    <button type="button" (click)="novaOuEditar()" *ngIf="!editando">
+      {{ anamnese ? 'Editar' : 'Cadastrar' }}
+    </button>
+  </div>
+
+  <p *ngIf="carregando">Carregando anamnese...</p>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <div *ngIf="!carregando && !editando && anamnese" class="resumo">
+    <div><strong>Hipertensão:</strong> {{ anamnese.hipertensao ? 'Sim' : 'Não' }}</div>
+    <div><strong>Diabetes:</strong> {{ anamnese.diabetes ? 'Sim' : 'Não' }}</div>
+    <div><strong>Fumante:</strong> {{ anamnese.fumante ? 'Sim' : 'Não' }}</div>
+    <div><strong>Grávida:</strong> {{ anamnese.gravida ? 'Sim' : 'Não' }}</div>
+
+    <div class="linha-completa">
+      <strong>Alergias:</strong>
+      <span>{{ anamnese.alergias || '-' }}</span>
+    </div>
+
+    <div class="linha-completa">
+      <strong>Medicamentos:</strong>
+      <span>{{ anamnese.medicamentos || '-' }}</span>
+    </div>
+
+    <div class="linha-completa">
+      <strong>Observações:</strong>
+      <span>{{ anamnese.observacoes || '-' }}</span>
+    </div>
+  </div>
+
+  <p *ngIf="!carregando && !editando && !anamnese" class="vazio">
+    Nenhuma anamnese cadastrada para este paciente.
+  </p>
+
+  <form *ngIf="editando" (ngSubmit)="salvar()" class="form-anamnese">
+
+    <div class="checks">
+      <label>
+        <input type="checkbox" [(ngModel)]="form.hipertensao" name="hipertensao">
+        Hipertensão
+      </label>
+
+      <label>
+        <input type="checkbox" [(ngModel)]="form.diabetes" name="diabetes">
+        Diabetes
+      </label>
+
+      <label>
+        <input type="checkbox" [(ngModel)]="form.fumante" name="fumante">
+        Fumante
+      </label>
+
+      <label>
+        <input type="checkbox" [(ngModel)]="form.gravida" name="gravida">
+        Grávida
+      </label>
+    </div>
+
+    <label>
+      Alergias
+      <textarea name="alergias" [(ngModel)]="form.alergias"></textarea>
+    </label>
+
+    <label>
+      Medicamentos
+      <textarea name="medicamentos" [(ngModel)]="form.medicamentos"></textarea>
+    </label>
+
+    <label>
+      Observações
+      <textarea name="observacoes" [(ngModel)]="form.observacoes"></textarea>
+    </label>
+
+    <div class="acoes">
+      <button type="submit" class="btn-primary">Salvar</button>
+      <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</section>

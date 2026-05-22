@@ -1,17 +1,41 @@
 <div class="layout">
-  <aside class="sidebar">
-    <h2>Prontuário Odontológico</h2>
 
-    <nav>
-      <ul>
-        <li>
-          <a routerLink="/pacientes" routerLinkActive="ativo">Pacientes</a>
-        </li>
-      </ul>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🦷</div>
+
+      <div>
+        <h1>Prontuario Odontológico</h1>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/pacientes" routerLinkActive="ativo">
+        👥 Pacientes
+      </a>
     </nav>
   </aside>
 
-  <main class="content">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="main-area">
+
+    <header class="topbar">
+      <div></div>
+
+      <div class="topbar-right">
+        <div class="usuario">
+          <div class="avatar">RC</div>
+
+          <div>
+            <strong>Rafael Silva</strong>
+            <span>Dentista</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
 </div>

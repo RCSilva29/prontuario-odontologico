@@ -1,0 +1,67 @@
+<section class="detalhe-page">
+  <p *ngIf="carregando">Carregando paciente...</p>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <div *ngIf="paciente" class="card">
+
+    <a routerLink="/pacientes" class="link-voltar">
+      ← Voltar
+    </a>
+    <div class="topo">
+      <div>
+        <h1>{{ paciente.nome }}</h1>
+        <p>Prontuário do paciente</p>
+      </div>
+
+      <a [routerLink]="['/pacientes', paciente.id, 'editar']" class="link-editar">
+
+        ✏️ Editar cadastro
+      </a>
+    </div>
+
+    <div class="dados-grid">
+      <div class="item">
+        <strong>CPF</strong>
+        <span>{{ formatarCpf(paciente.cpf) }}</span>
+      </div>
+
+      <div class="item">
+        <strong>Telefone</strong>
+        <span>{{ formatarTelefone(paciente.telefone) }}</span>
+      </div>
+
+      <div class="item">
+        <strong>Email</strong>
+        <span>{{ paciente.email || '-' }}</span>
+      </div>
+
+      <div class="item">
+        <strong>Data de nascimento</strong>
+        <span>{{ formatarData(paciente.dataNascimento) }}</span>
+      </div>
+
+      <div class="item observacoes">
+        <strong>Observações</strong>
+        <span>{{ paciente.observacoes || '-' }}</span>
+      </div>
+    </div>
+
+    <div class="modulos">
+      <div class="coluna-esquerda">
+        <app-anamnese-card [pacienteId]="paciente.id"></app-anamnese-card>
+        <app-odontograma-card [pacienteId]="paciente.id"></app-odontograma-card>
+      </div>
+
+      <div class="coluna-direita">
+        <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
+
+        <div class="modulo">
+          <app-anexos-card [pacienteId]="paciente.id"></app-anexos-card>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>

@@ -24,24 +24,23 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let paciente of pacientes">
+      <tr *ngFor="let paciente of pacientes" class="linha-click">
         <td>{{ paciente.id }}</td>
-        <td>{{ paciente.nome }}</td>
+        <td>
+          <a class="link-paciente" [routerLink]="['/pacientes', paciente.id]">
+
+            {{ paciente.nome }}
+          </a>
+        </td>
         <td>{{ formatarCpf(paciente.cpf) }}</td>
         <td>{{ formatarTelefone(paciente.telefone) }}</td>
         <td>{{ paciente.email }}</td>
         <td class="acoes-linha">
-          <a
-            class="icone editar"
-            [routerLink]="['/pacientes', paciente.id, 'editar']"
-            title="Editar paciente">
+          <a class="icone editar" [routerLink]="['/pacientes', paciente.id, 'editar']" title="Editar paciente">
             ✏️
           </a>
 
-          <button
-            type="button"
-            class="icone excluir"
-            title="Excluir paciente"
+          <button type="button" class="icone excluir" title="Excluir paciente"
             (click)="excluirPaciente($event, paciente)">
             🗑️
           </button>

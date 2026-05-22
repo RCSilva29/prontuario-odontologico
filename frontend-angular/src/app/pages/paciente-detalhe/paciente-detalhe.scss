@@ -1,0 +1,71 @@
+.detalhe-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.topo-card,
+.dados-grid,
+.modulo {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.topo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dados-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.item {
+  padding: 18px;
+}
+
+.item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.observacoes {
+  grid-column: 1 / -1;
+}
+
+.modulos {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.coluna-esquerda,
+.coluna-direita {
+  display: grid;
+  gap: 20px;
+}
+
+.link-voltar,
+.link-editar {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+}

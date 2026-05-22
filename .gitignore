@@ -25,3 +25,8 @@ backups/
 
 # Docker
 .env
+
+*.zip
+
+teste*
+anexo-baixado.txt

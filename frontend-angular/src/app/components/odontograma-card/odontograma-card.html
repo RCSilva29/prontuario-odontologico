@@ -1,0 +1,126 @@
+<section class="odontograma-card">
+  <div class="card-header">
+    <div>
+      <h2>Odontograma</h2>
+      <p>Selecione um dente para registrar status e observações</p>
+    </div>
+  </div>
+
+  <p *ngIf="carregando">Carregando odontograma...</p>
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <div class="odontograma-visual" *ngIf="!carregando">
+    <div class="arcada-label">Superior</div>
+
+    <div class="linha-dentes">
+      <div class="quadrante">
+        <span class="quadrante-label">Superior esquerdo</span>
+
+        <button
+          type="button"
+          class="dente"
+          *ngFor="let dente of superioresEsquerdo"
+          [class.selecionado]="denteSelecionado === dente"
+          [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)"
+          (click)="selecionarDente(dente)">
+          🦷
+          <small>{{ dente }}</small>
+        </button>
+      </div>
+
+      <div class="divisor"></div>
+
+      <div class="quadrante">
+        <span class="quadrante-label">Superior direito</span>
+
+        <button
+          type="button"
+          class="dente"
+          *ngFor="let dente of superioresDireito"
+          [class.selecionado]="denteSelecionado === dente"
+          [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)"
+          (click)="selecionarDente(dente)">
+          🦷
+          <small>{{ dente }}</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="linha-central"></div>
+
+    <div class="linha-dentes">
+      <div class="quadrante">
+        <span class="quadrante-label">Inferior esquerdo</span>
+
+        <button
+          type="button"
+          class="dente inferior"
+          *ngFor="let dente of inferioresEsquerdo"
+          [class.selecionado]="denteSelecionado === dente"
+          [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)"
+          (click)="selecionarDente(dente)">
+          🦷
+          <small>{{ dente }}</small>
+        </button>
+      </div>
+
+      <div class="divisor"></div>
+
+      <div class="quadrante">
+        <span class="quadrante-label">Inferior direito</span>
+
+        <button
+          type="button"
+          class="dente inferior"
+          *ngFor="let dente of inferioresDireito"
+          [class.selecionado]="denteSelecionado === dente"
+          [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)"
+          (click)="selecionarDente(dente)">
+          🦷
+          <small>{{ dente }}</small>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="painel-dente" *ngIf="denteSelecionado">
+    <h3>Dente {{ denteSelecionado }}</h3>
+
+    <label>
+      Status *
+      <select name="status" [(ngModel)]="form.status">
+        <option value="">Selecione</option>
+        <option *ngFor="let status of statusOptions" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Observações
+      <textarea
+        name="observacao"
+        [(ngModel)]="form.observacao"
+        placeholder="Informe observações sobre este dente">
+      </textarea>
+    </label>
+
+    <div class="acoes">
+      <button type="button" class="btn-primary" (click)="salvar()" [disabled]="salvando">
+        {{ salvando ? 'Salvando...' : 'Salvar dente' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="limparRegistro()">
+        Limpar registro
+      </button>
+    </div>
+  </div>
+
+  <p class="ajuda" *ngIf="!denteSelecionado">
+    Clique em um dente para editar o status e observações.
+  </p>
+</section>

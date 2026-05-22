@@ -1,0 +1,200 @@
+.odontograma-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 28px;
+  background: white;
+}
+
+.card-header {
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.card-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.odontograma-visual {
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  border-radius: 22px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.arcada-label {
+  text-align: center;
+  font-weight: 800;
+  color: #0f766e;
+  margin-bottom: 18px;
+}
+
+.linha-dentes {
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.quadrante {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(42px, 1fr));
+  gap: 8px;
+  align-items: center;
+}
+
+.quadrante-label {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.divisor {
+  height: 100%;
+  background: #0891b2;
+  border-radius: 2px;
+}
+
+.linha-central {
+  height: 2px;
+  background: #0891b2;
+  margin: 14px 0;
+  border-radius: 2px;
+}
+
+.dente {
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 14px;
+  padding: 8px 4px;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  font-size: 22px;
+  transition: all 0.2s ease;
+  width: 54px;
+  height: 62px;
+}
+
+.dente small {
+  font-size: 12px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.dente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.dente.selecionado {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+.dente.com-registro {
+  background: #fee2e2;
+  border: 2px solid #f87171;
+  color: #991b1b;
+}
+
+.dente.restaurado,
+.dente.saudavel,
+.dente.cariado,
+.dente.canal,
+.dente.implante,
+.dente.protese,
+.dente.extraido,
+.dente.ausente {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+.painel-dente {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.painel-dente h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.painel-dente label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.painel-dente select,
+.painel-dente textarea {
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.painel-dente textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.acoes {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: white;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  color: #64748b;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.erro {
+  color: #dc2626;
+}
+
+.ajuda {
+  color: #64748b;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .linha-dentes {
+    grid-template-columns: 1fr;
+  }
+
+  .divisor {
+    display: none;
+  }
+
+  .quadrante {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

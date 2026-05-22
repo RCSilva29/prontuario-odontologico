@@ -1,0 +1,66 @@
+<section class="atendimentos-card">
+  <div class="card-header">
+    <div>
+      <h2>Atendimentos</h2>
+      <p>Evolução clínica e procedimentos realizados</p>
+    </div>
+
+    <button type="button" (click)="novo()" *ngIf="!editando">
+      Novo atendimento
+    </button>
+  </div>
+
+  <p *ngIf="carregando">Carregando atendimentos...</p>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <form *ngIf="editando" (ngSubmit)="salvar()" class="form-atendimento">
+    <h3>{{ atendimentoEditando ? 'Editar atendimento' : 'Novo atendimento' }}</h3>
+
+    <label>
+      Queixa principal
+      <textarea name="queixaPrincipal" [(ngModel)]="form.queixaPrincipal"></textarea>
+    </label>
+
+    <label>
+      Evolução clínica
+      <textarea name="evolucaoClinica" [(ngModel)]="form.evolucaoClinica"></textarea>
+    </label>
+
+    <label>
+      Procedimento realizado
+      <textarea name="procedimentoRealizado" [(ngModel)]="form.procedimentoRealizado"></textarea>
+    </label>
+
+    <label>
+      Observações
+      <textarea name="observacoes" [(ngModel)]="form.observacoes"></textarea>
+    </label>
+
+    <div class="acoes">
+      <button type="submit" class="btn-primary">Salvar</button>
+      <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+
+  <div *ngIf="!editando && !carregando && atendimentos.length === 0" class="vazio">
+    Nenhum atendimento cadastrado para este paciente.
+  </div>
+
+  <div *ngIf="!editando && atendimentos.length > 0" class="lista">
+    <article class="atendimento" *ngFor="let atendimento of atendimentos">
+      <div class="atendimento-topo">
+        <strong>{{ formatarDataHora(atendimento.dataAtendimento) }}</strong>
+
+        <button type="button" (click)="editar(atendimento)">
+          ✏️ Editar
+        </button>
+      </div>
+
+      <p><strong>Queixa principal:</strong> {{ atendimento.queixaPrincipal || '-' }}</p>
+      <p><strong>Evolução clínica:</strong> {{ atendimento.evolucaoClinica || '-' }}</p>
+      <p><strong>Procedimento:</strong> {{ atendimento.procedimentoRealizado || '-' }}</p>
+      <p><strong>Observações:</strong> {{ atendimento.observacoes || '-' }}</p>
+    </article>
+  </div>
+</section>

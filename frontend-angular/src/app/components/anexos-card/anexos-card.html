@@ -1,0 +1,71 @@
+<section class="anexos-card">
+
+  <div class="card-header">
+    <div>
+      <h2>Anexos</h2>
+      <p>Fotos, radiografias, PDFs e documentos</p>
+    </div>
+
+    <label class="upload-btn">
+      {{ enviando ? 'Enviando...' : 'Adicionar anexo' }}
+
+      <input
+        type="file"
+        (change)="selecionarArquivo($event)"
+        [disabled]="enviando">
+    </label>
+  </div>
+
+  <p *ngIf="carregando">Carregando anexos...</p>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <div *ngIf="!carregando && anexos.length === 0" class="vazio">
+    Nenhum anexo cadastrado.
+  </div>
+
+  <div class="lista" *ngIf="anexos.length > 0">
+
+    <article class="anexo" *ngFor="let anexo of anexos">
+
+      <div class="arquivo-info">
+        <div class="arquivo-icone">
+          📄
+        </div>
+
+        <div>
+          <strong>{{ anexo.nomeArquivo }}</strong>
+
+          <span>
+            {{ formatarTamanho(anexo.tamanhoArquivo) }}
+            •
+            {{ formatarData(anexo.dataUpload) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="acoes">
+
+        <button
+          type="button"
+          class="btn-download"
+          (click)="download(anexo)">
+
+          ⬇ Download
+        </button>
+
+        <button
+          type="button"
+          class="btn-excluir"
+          (click)="excluir(anexo)">
+
+          🗑 Excluir
+        </button>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>

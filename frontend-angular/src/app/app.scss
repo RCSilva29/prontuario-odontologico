@@ -1,58 +1,138 @@
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f4f7fb;
+  color: #0f172a;
 }
 
 .layout {
   display: flex;
   min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .sidebar {
   width: 260px;
-  background: #1f2937;
-  color: white;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
   padding: 24px;
 }
 
-.sidebar h2 {
-  margin-bottom: 24px;
-  font-size: 22px;
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 42px;
 }
 
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar li {
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  cursor: pointer;
-}
-
-.sidebar li:hover {
-  color: #60a5fa;
-}
-
-.content {
-  flex: 1;
-  padding: 32px;
-  background: #f3f4f6;
-}
-
-.content h1 {
-  margin-bottom: 16px;
-}
-
-.sidebar a {
+.logo-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
+  font-size: 24px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.logo span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.menu {
+  display: grid;
+  gap: 8px;
+}
+
+.menu a {
   text-decoration: none;
+  color: #334155;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.menu a:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.menu a.ativo {
+  background: #2563eb;
+  color: white;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: grid;
+  gap: 6px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 78px;
+  background: linear-gradient(90deg, #0f172a, #0f3b73);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.topbar-left {
+  font-size: 24px;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.usuario strong {
   display: block;
 }
 
-.sidebar a.ativo {
-  color: #60a5fa;
-  font-weight: bold;
+.usuario span {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.content {
+  padding: 28px;
+  overflow-x: auto;
 }
