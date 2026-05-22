@@ -1,0 +1,68 @@
+<section class="form-page">
+    <div class="form-card">
+        <div class="header">
+            <div class="icon">👤</div>
+            <div>
+                <h1>{{ modoEdicao ? 'Editar Paciente' : 'Novo Paciente' }}</h1>
+                <p>Preencha os dados do paciente</p>
+            </div>
+        </div>
+
+        <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+        <form (ngSubmit)="salvar()">
+            <label>
+                Nome <span>*</span>
+                <input type="text" name="nome" [(ngModel)]="paciente.nome" placeholder="Digite o nome completo"
+                    required>
+            </label>
+
+            <label>
+                CPF <span>*</span>
+                <input type="text" name="cpf" [(ngModel)]="paciente.cpf" placeholder="000.000.000-00" maxlength="14"
+                    required inputmode="numeric" (keypress)="permitirSomenteNumeros($event)"
+                    (paste)="bloquearColarNaoNumerico($event)" (input)="formatarCpf()">
+            </label>
+
+            <label>
+                Data de nascimento
+                <input type="date" name="dataNascimento" [(ngModel)]="paciente.dataNascimento" min="1900-01-01"
+                    max="2099-12-31">
+            </label>
+
+            <label>
+                Telefone
+                <input type="text" name="telefone" [(ngModel)]="paciente.telefone" placeholder="(21) 99999-9999"
+                    maxlength="15" (input)="formatarTelefone()">
+            </label>
+
+            <label>
+                Email
+                <input type="email" name="email" [(ngModel)]="paciente.email" placeholder="exemplo@dominio.com.br"
+                    (blur)="validarEmailCampo()">
+
+                <small *ngIf="erroEmail" class="erro-campo">
+                    {{ erroEmail }}
+                </small>
+            </label>
+
+            <label>
+                Observações
+                <textarea name="observacoes" [(ngModel)]="paciente.observacoes"
+                    placeholder="Informações adicionais sobre o paciente"></textarea>
+            </label>
+
+            <div class="acoes">
+                <button type="submit" class="btn-primary" [disabled]="salvando">
+                    {{ salvando ? 'Salvando...' : (modoEdicao ? 'Atualizar paciente' : 'Salvar paciente') }}
+                </button>
+
+                <button type="button" class="btn-secondary" (click)="cancelar()">
+                    Cancelar
+                </button>
+            </div>
+
+            <p class="seguranca">🔒 Seus dados estão protegidos e seguros</p>
+        </form>
+    </div>
+</section>

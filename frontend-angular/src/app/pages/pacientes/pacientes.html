@@ -1,0 +1,56 @@
+<section class="pacientes">
+  <div class="cabecalho">
+    <h1>Pacientes</h1>
+
+    <a routerLink="/pacientes/novo" class="botao-novo">
+      Novo Paciente
+    </a>
+  </div>
+
+  <p *ngIf="carregando">Carregando pacientes...</p>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <table *ngIf="!carregando && pacientes.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th class="coluna-acoes">Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let paciente of pacientes">
+        <td>{{ paciente.id }}</td>
+        <td>{{ paciente.nome }}</td>
+        <td>{{ formatarCpf(paciente.cpf) }}</td>
+        <td>{{ formatarTelefone(paciente.telefone) }}</td>
+        <td>{{ paciente.email }}</td>
+        <td class="acoes-linha">
+          <a
+            class="icone editar"
+            [routerLink]="['/pacientes', paciente.id, 'editar']"
+            title="Editar paciente">
+            ✏️
+          </a>
+
+          <button
+            type="button"
+            class="icone excluir"
+            title="Excluir paciente"
+            (click)="excluirPaciente($event, paciente)">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!carregando && pacientes.length === 0">
+    Nenhum paciente cadastrado.
+  </p>
+</section>
