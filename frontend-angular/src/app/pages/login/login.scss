@@ -1,0 +1,84 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.78)),
+    url('/LogoSisOdonto.png') center / 700px no-repeat,
+    #f4f7fb;
+  padding: 32px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: white;
+  padding: 42px;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+  text-align: center;
+}
+
+.logo {
+  width: 170px;
+  margin-bottom: 22px;
+}
+
+h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 28px;
+}
+
+p {
+  color: #64748b;
+  margin: 10px 0 24px;
+}
+
+form {
+  display: grid;
+  gap: 18px;
+  text-align: left;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+input {
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+button {
+  margin-top: 8px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.erro {
+  color: #dc2626;
+  font-weight: 700;
+}

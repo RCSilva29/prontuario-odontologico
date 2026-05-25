@@ -1,0 +1,73 @@
+.senha-page {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+h1 {
+    margin: 0;
+    color: #0f172a;
+}
+
+p {
+    color: #64748b;
+}
+
+form {
+    display: grid;
+    gap: 18px;
+    margin-top: 24px;
+}
+
+label {
+    display: grid;
+    gap: 8px;
+    font-weight: 700;
+}
+
+input {
+    border: 1px solid #dbe3ef;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.erro {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+.sucesso {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.acoes {
+    display: flex;
+    gap: 12px;
+}
+
+.acoes button {
+    flex: 1;
+}
+
+.btn-cancelar {
+    background: white;
+    color: #64748b;
+    border: 1px solid #dbe3ef;
+}

@@ -1,0 +1,44 @@
+<section class="senha-page">
+    <div class="form-card">
+        <h1>{{ obrigatoria ? 'Troca de senha obrigatória' : 'Alterar minha senha' }}</h1>
+        <p>
+            {{
+            obrigatoria
+            ? 'Por segurança, altere sua senha para continuar usando o sistema.'
+            : 'Informe sua senha atual e escolha uma nova senha.'
+            }}
+        </p>
+
+        <p *ngIf="erro" class="erro">{{ erro }}</p>
+        <p *ngIf="sucesso" class="sucesso">{{ sucesso }}</p>
+
+        <form (ngSubmit)="salvar()">
+            <label *ngIf="obrigatoria">
+                Email
+                <input type="email" name="email" [(ngModel)]="email" readonly>
+            </label>
+            <label *ngIf="!obrigatoria">
+                Senha atual
+                <input type="password" name="senhaAtual" [(ngModel)]="senhaAtual">
+            </label>
+
+            <label>
+                Nova senha
+                <input type="password" name="novaSenha" [(ngModel)]="novaSenha">
+            </label>
+
+            <label>
+                Confirmar nova senha
+                <input type="password" name="confirmarSenha" [(ngModel)]="confirmarSenha">
+            </label>
+
+            <button type="submit" [disabled]="salvando">
+                {{ salvando ? 'Salvando...' : 'Alterar senha' }}
+            </button>
+
+            <button type="button" class="btn-cancelar" (click)="cancelar()">
+                Cancelar
+            </button>
+        </form>
+    </div>
+</section>

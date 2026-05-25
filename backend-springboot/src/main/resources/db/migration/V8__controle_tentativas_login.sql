@@ -1,0 +1,5 @@
+ALTER TABLE usuario
+ADD COLUMN tentativas_login INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE usuario
+ADD COLUMN troca_senha_obrigatoria BOOLEAN NOT NULL DEFAULT FALSE;

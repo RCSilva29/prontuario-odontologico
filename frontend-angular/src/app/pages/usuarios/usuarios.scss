@@ -1,0 +1,140 @@
+.usuarios-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.cabecalho h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.cabecalho p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.cabecalho button,
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.form-card,
+.table-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  margin-bottom: 24px;
+}
+
+.form-card {
+  display: grid;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.form-card h2 {
+  margin: 0;
+}
+
+.form-card label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.form-card input {
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.acoes-form {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background: white;
+  color: #64748b;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+th {
+  color: #334155;
+  background: #f8fafc;
+}
+
+.col-acoes {
+  width: 100px;
+  text-align: center;
+}
+
+.acoes-linha {
+  text-align: center;
+}
+
+.btn-excluir {
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.erro {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.sucesso {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.form-card select {
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.btn-editar {
+  border: none;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  margin-right: 8px;
+}

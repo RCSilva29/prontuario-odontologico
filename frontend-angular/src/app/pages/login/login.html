@@ -1,0 +1,34 @@
+<section class="login-page">
+  <div class="login-card">
+    <img src="/LogoSisOdonto.png" alt="Consultório Odonto" class="logo">
+
+    <h1>Acesso ao Sistema</h1>
+    <p>Entre com seu email e senha</p>
+
+    <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+    <form (ngSubmit)="entrar()">
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="admin@odonto.com">
+      </label>
+
+      <label>
+        Senha
+        <input
+          type="password"
+          name="senha"
+          [(ngModel)]="senha"
+          placeholder="Digite sua senha">
+      </label>
+
+      <button type="submit" [disabled]="carregando">
+        {{ carregando ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</section>

@@ -1,0 +1,89 @@
+<section class="usuarios-page">
+
+  <div class="cabecalho">
+    <div>
+      <h1>Usuários</h1>
+      <p>Cadastro de usuários com acesso ao sistema</p>
+    </div>
+
+    <button type="button" (click)="novoUsuario()" *ngIf="!exibindoFormulario">
+      Novo usuário
+    </button>
+  </div>
+
+  <p *ngIf="erro" class="erro">{{ erro }}</p>
+  <p *ngIf="sucesso" class="sucesso">{{ sucesso }}</p>
+
+  <form *ngIf="exibindoFormulario" class="form-card" (ngSubmit)="salvar()">
+    <h2>{{ usuarioEditando ? 'Editar usuário' : 'Novo usuário' }}</h2>
+
+    <label>
+      Nome *
+      <input type="text" name="nome" [(ngModel)]="form.nome" placeholder="Nome do usuário">
+    </label>
+
+    <label>
+      Email *
+      <input type="email" name="email" [(ngModel)]="form.email" placeholder="usuario@email.com">
+    </label>
+
+    <label>
+      Perfil *
+      <select name="perfil" [(ngModel)]="form.perfil">
+        <option value="ADMIN">Admin</option>
+        <option value="DENTISTA">Dentista</option>
+      </select>
+    </label>
+
+    <label>
+      Senha {{ usuarioEditando ? '(preencha somente se quiser alterar)' : '*' }}
+      <input type="password" name="senha" [(ngModel)]="form.senha" placeholder="Mínimo 6 caracteres">
+    </label>
+
+    <div class="acoes-form">
+      <button type="submit" class="btn-primary" [disabled]="salvando">
+        {{ salvando ? 'Salvando...' : 'Salvar usuário' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelar()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <div class="table-card">
+    <p *ngIf="carregando">Carregando usuários...</p>
+
+    <table *ngIf="!carregando && usuarios.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Perfil</th>
+          <th>Data de criação</th>
+          <th class="col-acoes">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let usuario of usuarios">
+          <td>{{ usuario.id }}</td>
+          <td>{{ usuario.nome }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>{{ formatarData(usuario.dataCriacao) }}</td>
+          <td>{{ usuario.perfil }}</td>
+          <td class="acoes-linha">
+            <button type="button" class="btn-editar" (click)="editar(usuario)">✏️</button>
+            <button type="button" class="btn-excluir" (click)="excluir(usuario)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!carregando && usuarios.length === 0">
+      Nenhum usuário cadastrado.
+    </p>
+  </div>
+
+</section>

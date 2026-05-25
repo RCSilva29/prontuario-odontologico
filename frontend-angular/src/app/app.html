@@ -1,4 +1,6 @@
-<div class="layout">
+<router-outlet *ngIf="isLoginPage()"></router-outlet>
+
+<div class="layout" *ngIf="!isLoginPage()">
 
   <aside class="sidebar">
     <div class="logo">
@@ -7,19 +9,24 @@
       </div>
 
       <div>
-        <h1>Prontuario Odontológico</h1>
+        <h1>Prontuário Odontológico</h1>
       </div>
     </div>
 
     <nav class="menu">
+      <a *ngIf="isAdmin()" routerLink="/usuarios" routerLinkActive="ativo">
+        👤 Usuários
+      </a>
       <a routerLink="/pacientes" routerLinkActive="ativo">
         👥 Pacientes
+      </a>
+      <a routerLink="/minha-senha" routerLinkActive="ativo">
+        🔑 Alterar senha
       </a>
     </nav>
   </aside>
 
   <div class="main-area">
-
     <header class="topbar">
       <div class="topbar-brand">
         <img src="/LogoSisOdonto.png" alt="Consultório Odonto">
@@ -27,12 +34,15 @@
 
       <div class="topbar-right">
         <div class="usuario">
-          <div class="avatar">RC</div>
+          <div class="avatar">{{ iniciaisUsuario() }}</div>
 
           <div>
-            <strong>Rafael Silva</strong>
-            <span>Dentista</span>
+            <strong>{{ nomeUsuario() }}</strong>
           </div>
+
+          <button type="button" class="btn-sair" (click)="sair()">
+            Sair
+          </button>
         </div>
       </div>
     </header>
@@ -40,6 +50,5 @@
     <main class="content">
       <router-outlet></router-outlet>
     </main>
-
   </div>
 </div>
