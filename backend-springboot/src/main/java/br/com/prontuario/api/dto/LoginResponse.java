@@ -7,12 +7,20 @@ public class LoginResponse {
     private String email;
     private String mensagem;
     private String perfil;
+    private String token;
 
-    public LoginResponse(Long id, String nome, String email, String perfil, String mensagem) {
+    public LoginResponse(
+            Long id,
+            String nome,
+            String email,
+            String perfil,
+            String token,
+            String mensagem) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.perfil = perfil;
+        this.token = token;
         this.mensagem = mensagem;
     }
 
@@ -34,5 +42,9 @@ public class LoginResponse {
 
     public String getPerfil() {
         return perfil;
+    }
+
+    public String getToken() {
+        return token;
     }
 }
