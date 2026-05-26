@@ -1,23 +1,40 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const dados = localStorage.getItem('usuarioLogado');
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  if (!dados) {
-    return next(req);
+  const usuario = authService.obterUsuario();
+
+  let request = req;
+
+  if (usuario?.token) {
+    request = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${usuario.token}`
+      }
+    });
   }
 
-  const usuario = JSON.parse(dados);
+  return next(request).pipe(
+    catchError((error: HttpErrorResponse) => {
 
-  if (!usuario?.token) {
-    return next(req);
-  }
+      const rotaAtual = router.url;
 
-  const requestComToken = req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${usuario.token}`
-    }
-  });
+      const rotaPublica =
+        rotaAtual.startsWith('/login') ||
+        rotaAtual.startsWith('/minha-senha?obrigatoria=true');
 
-  return next(requestComToken);
+      if ((error.status === 401 || error.status === 403) && !rotaPublica) {
+        authService.logout();
+        router.navigate(['/login']);
+      }
+
+      return throwError(() => error);
+    })
+  );
 };

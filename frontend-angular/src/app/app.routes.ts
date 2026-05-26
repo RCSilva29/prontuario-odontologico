@@ -7,6 +7,7 @@ import { PacienteDetalhe } from './pages/paciente-detalhe/paciente-detalhe';
 import { authGuard } from './guards/auth.guard';
 import { Usuarios } from './pages/usuarios/usuarios';
 import { MinhaSenha } from './pages/minha-senha/minha-senha';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -41,7 +42,7 @@ export const routes: Routes = [
   {
     path: 'usuarios',
     component: Usuarios,
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
   },
   {
     path: 'minha-senha',

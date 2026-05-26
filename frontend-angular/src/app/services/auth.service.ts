@@ -30,7 +30,18 @@ export class AuthService {
   }
 
   estaLogado(): boolean {
-    return !!this.obterUsuario();
+    const usuario = this.obterUsuario();
+
+    if (!usuario) {
+      return false;
+    }
+
+    if (this.tokenExpirado()) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   isAdmin(): boolean {
@@ -45,5 +56,38 @@ export class AuthService {
       'http://localhost:8080/auth/troca-senha-obrigatoria',
       request
     );
+  }
+
+  tokenExpirado(): boolean {
+    const usuario = this.obterUsuario();
+
+    if (!usuario?.token) {
+      return true;
+    }
+
+    try {
+      const payloadBase64 = usuario.token.split('.')[1];
+
+      if (!payloadBase64) {
+        return true;
+      }
+
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+
+      if (!payload.exp) {
+        return true;
+      }
+
+      const agoraEmSegundos = Math.floor(Date.now() / 1000);
+
+      return payload.exp < agoraEmSegundos;
+    } catch {
+      return true;
+    }
+  }
+
+  sessaoValida(): boolean {
+    return this.estaLogado() && !this.tokenExpirado();
   }
 }
