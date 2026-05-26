@@ -1,11 +1,11 @@
 # Angular
-node_modules/
-dist/
-.angular/
+frontend-angular/node_modules/
+frontend-angular/dist/
+frontend-angular/.angular/
 
 # Spring
-target/
-build/
+backend-springboot/target/
+backend-springboot/build/
 
 # IDE
 .idea/
@@ -25,10 +25,11 @@ backups/
 
 # Docker
 .env
-
 *.zip
 
+# Testes
 teste*
 anexo-baixado.txt
 
+# Maven local
 empty-settings.xml
