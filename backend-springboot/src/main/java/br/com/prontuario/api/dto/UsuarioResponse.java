@@ -10,6 +10,9 @@ public class UsuarioResponse {
     private String nome;
     private String email;
     private Boolean ativo;
+    private Boolean bloqueado;
+    private Integer tentativasLogin;
+    private Boolean trocaSenhaObrigatoria;
     private LocalDateTime dataCriacao;
     private String perfil;
 
@@ -18,6 +21,9 @@ public class UsuarioResponse {
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.ativo = usuario.getAtivo();
+        this.bloqueado = usuario.getBloqueado();
+        this.tentativasLogin = usuario.getTentativasLogin();
+        this.trocaSenhaObrigatoria = usuario.getTrocaSenhaObrigatoria();
         this.dataCriacao = usuario.getDataCriacao();
         this.perfil = usuario.getPerfil();
     }
@@ -36,6 +42,18 @@ public class UsuarioResponse {
 
     public Boolean getAtivo() {
         return ativo;
+    }
+
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public Integer getTentativasLogin() {
+        return tentativasLogin;
+    }
+
+    public Boolean getTrocaSenhaObrigatoria() {
+        return trocaSenhaObrigatoria;
     }
 
     public LocalDateTime getDataCriacao() {

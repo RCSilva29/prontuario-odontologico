@@ -138,3 +138,47 @@ th {
   cursor: pointer;
   margin-right: 8px;
 }
+
+.col-acoes {
+  width: 180px;
+  text-align: center;
+}
+
+.acoes-linha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-acao {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-editar {
+  background: #eef4ff;
+}
+
+.btn-excluir {
+  background: #ffe5e5;
+}
+
+.btn-desbloquear {
+  background: #e8f8ee;
+}
+
+.btn-senha {
+  background: #fff4d6;
+}
+
+.btn-reativar {
+  background: #e8f8ee;
+}

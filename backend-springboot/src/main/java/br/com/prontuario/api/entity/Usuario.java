@@ -39,4 +39,15 @@ public class Usuario {
 
     @Column(nullable = false)
     private Boolean trocaSenhaObrigatoria = false;
+
+    @Column(nullable = false)
+    private Boolean bloqueado = false;
+
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(Boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
 }

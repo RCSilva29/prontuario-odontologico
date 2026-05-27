@@ -45,7 +45,7 @@ export class Login implements OnInit {
     this.carregando = true;
 
     this.authService.login({
-      email: this.email,
+      email: this.email.trim(),
       senha: this.senha
     }).subscribe({
       next: (usuario) => {
@@ -57,22 +57,38 @@ export class Login implements OnInit {
       error: (erro) => {
         this.carregando = false;
 
-        const mensagem = erro?.error?.erro || erro?.error?.message || '';
+        const mensagem =
+          erro?.error?.erro ||
+          erro?.error?.message ||
+          erro?.error ||
+          '';
 
-        if (mensagem.includes('TROCA_SENHA_OBRIGATORIA')) {
+        if (typeof mensagem === 'string' && mensagem.includes('USUARIO_BLOQUEADO')) {
+          this.authService.logout();
+          this.erro = 'Usuário bloqueado. Procure o administrador.';
+          return;
+        }
 
+        if (typeof mensagem === 'string' && mensagem.includes('TROCA_SENHA_OBRIGATORIA')) {
           this.authService.logout();
 
           this.router.navigate(['/minha-senha'], {
             queryParams: {
               obrigatoria: true,
-              email: this.email
+              email: this.email.trim()
             }
           });
 
           return;
         }
 
+        if (typeof mensagem === 'string' && mensagem.includes('Usuário inativo')) {
+          this.authService.logout();
+          this.erro = 'Usuário inativo. Procure o administrador.';
+          return;
+        }
+
+        this.authService.logout();
         this.erro = 'Email ou senha inválidos';
       }
     });

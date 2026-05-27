@@ -35,4 +35,18 @@ export class UsuarioService {
   alterarSenha(id: number, request: { senhaAtual: string; novaSenha: string }): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/senha`, request);
   }
+
+  desbloquear(id: number) {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}/desbloquear`, {});
+  }
+
+  redefinirSenha(id: number, novaSenha: string) {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}/redefinir-senha`, {
+      novaSenha
+    });
+  }
+
+  reativar(id: number) {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}/reativar`, {});
+  }
 }

@@ -17,6 +17,16 @@ public class UsuarioRequest {
     @NotBlank(message = "Perfil é obrigatório")
     private String perfil;
 
+    private Boolean ativo;
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
     public String getNome() {
         return nome;
     }

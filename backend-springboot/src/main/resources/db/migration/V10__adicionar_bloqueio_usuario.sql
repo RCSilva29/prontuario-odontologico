@@ -1,0 +1,6 @@
+ALTER TABLE usuario
+ADD COLUMN IF NOT EXISTS bloqueado BOOLEAN NOT NULL DEFAULT FALSE;
+
+UPDATE usuario
+SET bloqueado = FALSE
+WHERE bloqueado IS NULL;

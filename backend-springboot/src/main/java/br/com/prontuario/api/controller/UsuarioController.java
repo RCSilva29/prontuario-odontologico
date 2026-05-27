@@ -7,6 +7,8 @@ import br.com.prontuario.api.entity.Usuario;
 import br.com.prontuario.api.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import br.com.prontuario.api.dto.RedefinirSenhaRequest;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -41,8 +43,10 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public void excluir(@PathVariable Long id) {
-        service.excluir(id);
+    public void excluir(
+            @PathVariable Long id,
+            Authentication authentication) {
+        service.excluir(id, authentication.getName());
     }
 
     @PutMapping("/{id}/senha")
@@ -58,5 +62,25 @@ public class UsuarioController {
             @Valid @RequestBody UsuarioRequest request) {
         Usuario usuario = service.atualizar(id, request);
         return new UsuarioResponse(usuario);
+    }
+
+    @PutMapping("/{id}/desbloquear")
+    public Usuario desbloquear(
+            @PathVariable Long id,
+            Authentication authentication) {
+        return service.desbloquear(id, authentication.getName());
+    }
+
+    @PutMapping("/{id}/redefinir-senha")
+    public Usuario redefinirSenha(
+            @PathVariable Long id,
+            @RequestBody RedefinirSenhaRequest request,
+            Authentication authentication) {
+        return service.redefinirSenha(id, request.getNovaSenha(), authentication.getName());
+    }
+
+    @PutMapping("/{id}/reativar")
+    public UsuarioResponse reativar(@PathVariable Long id) {
+        return new UsuarioResponse(service.reativar(id));
     }
 }

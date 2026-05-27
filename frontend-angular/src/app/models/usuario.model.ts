@@ -4,6 +4,11 @@ export interface Usuario {
   email: string;
   perfil: 'ADMIN' | 'DENTISTA';
   ativo: boolean;
+
+  bloqueado: boolean;
+  tentativasLogin: number;
+  trocaSenhaObrigatoria: boolean;
+
   dataCriacao: string;
 }
 
@@ -12,4 +17,5 @@ export interface UsuarioRequest {
   email: string;
   senha?: string;
   perfil: 'ADMIN' | 'DENTISTA';
+  ativo?: boolean;
 }

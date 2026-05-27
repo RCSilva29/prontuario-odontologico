@@ -21,7 +21,8 @@ export class Usuarios implements OnInit {
     nome: '',
     email: '',
     senha: '',
-    perfil: 'DENTISTA'
+    perfil: 'DENTISTA',
+    ativo: true
   };
 
   erro = '';
@@ -38,6 +39,7 @@ export class Usuarios implements OnInit {
 
   carregarUsuarios(): void {
     this.carregando = true;
+    this.erro = '';
 
     this.usuarioService.listar().subscribe({
       next: (dados) => {
@@ -61,7 +63,8 @@ export class Usuarios implements OnInit {
       nome: '',
       email: '',
       senha: '',
-      perfil: 'DENTISTA'
+      perfil: 'DENTISTA',
+      ativo: true
     };
   }
 
@@ -75,7 +78,8 @@ export class Usuarios implements OnInit {
       nome: usuario.nome,
       email: usuario.email,
       senha: '',
-      perfil: usuario.perfil
+      perfil: usuario.perfil,
+      ativo: usuario.ativo
     };
   }
 
@@ -121,6 +125,8 @@ export class Usuarios implements OnInit {
 
     this.salvando = true;
 
+    const editando = !!this.usuarioEditando;
+
     const requisicao = this.usuarioEditando
       ? this.usuarioService.atualizar(this.usuarioEditando.id, this.form)
       : this.usuarioService.cadastrar(this.form);
@@ -130,13 +136,13 @@ export class Usuarios implements OnInit {
         this.salvando = false;
         this.exibindoFormulario = false;
         this.usuarioEditando = undefined;
-        this.sucesso = this.usuarioEditando
+        this.sucesso = editando
           ? 'Usuário atualizado com sucesso'
           : 'Usuário cadastrado com sucesso';
         this.carregarUsuarios();
       },
       error: () => {
-        this.erro = this.usuarioEditando
+        this.erro = editando
           ? 'Erro ao atualizar usuário'
           : 'Erro ao cadastrar usuário';
         this.salvando = false;
@@ -145,6 +151,9 @@ export class Usuarios implements OnInit {
   }
 
   excluir(usuario: Usuario): void {
+    this.erro = '';
+    this.sucesso = '';
+
     const confirmar = confirm(`Confirma inativar o usuário "${usuario.nome}"?`);
 
     if (!confirmar) {
@@ -153,13 +162,74 @@ export class Usuarios implements OnInit {
 
     this.usuarioService.excluir(usuario.id).subscribe({
       next: () => {
+        this.erro = '';
         this.sucesso = 'Usuário inativado com sucesso';
         this.carregarUsuarios();
       },
-      error: () => {
-        this.erro = 'Erro ao inativar usuário';
+      error: (erro) => {
+        this.sucesso = '';
+        this.erro = erro?.error?.erro || erro?.error?.message || 'Erro ao inativar usuário';
       }
     });
+  }
+
+  desbloquearUsuario(usuario: Usuario): void {
+    const confirmar = confirm(`Deseja desbloquear o usuário "${usuario.nome}"?`);
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.erro = '';
+    this.sucesso = '';
+
+    this.usuarioService.desbloquear(usuario.id).subscribe({
+      next: () => {
+        this.sucesso = 'Usuário desbloqueado com sucesso';
+        this.carregarUsuarios();
+      },
+      error: (erro) => {
+        this.erro = erro?.error?.erro || erro?.error?.message || 'Erro ao executar operação';
+      }
+    });
+  }
+
+  redefinirSenhaUsuario(usuario: Usuario): void {
+    const novaSenha = prompt(`Informe a nova senha temporária para "${usuario.nome}":`);
+
+    if (!novaSenha) {
+      return;
+    }
+
+    if (novaSenha.length < 6) {
+      this.erro = 'A senha deve ter no mínimo 6 caracteres';
+      return;
+    }
+
+    this.erro = '';
+    this.sucesso = '';
+
+    this.usuarioService.redefinirSenha(usuario.id, novaSenha).subscribe({
+      next: () => {
+        this.sucesso = 'Senha redefinida com sucesso. O usuário deverá trocar a senha no próximo login.';
+        this.carregarUsuarios();
+      },
+      error: (erro) => {
+        this.erro = erro?.error?.erro || erro?.error?.message || 'Erro ao executar operação';
+      }
+    });
+  }
+
+  situacao(usuario: Usuario): string {
+    if (!usuario.ativo) {
+      return 'Inativo';
+    }
+
+    if (usuario.bloqueado) {
+      return 'Bloqueado';
+    }
+
+    return 'Ativo';
   }
 
   emailValido(email: string): boolean {
@@ -168,5 +238,28 @@ export class Usuarios implements OnInit {
 
   formatarData(data: string): string {
     return data ? new Date(data).toLocaleString('pt-BR') : '-';
+  }
+
+  reativarUsuario(usuario: Usuario): void {
+    this.erro = '';
+    this.sucesso = '';
+
+    const confirmar = confirm(`Deseja reativar o usuário "${usuario.nome}"?`);
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.usuarioService.reativar(usuario.id).subscribe({
+      next: () => {
+        this.erro = '';
+        this.sucesso = 'Usuário reativado com sucesso';
+        this.carregarUsuarios();
+      },
+      error: (erro) => {
+        this.sucesso = '';
+        this.erro = erro?.error?.erro || erro?.error?.message || 'Erro ao reativar usuário';
+      }
+    });
   }
 }

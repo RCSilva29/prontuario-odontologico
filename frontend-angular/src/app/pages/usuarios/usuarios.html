@@ -35,6 +35,15 @@
       </select>
     </label>
 
+    <label *ngIf="usuarioEditando">
+      Situação *
+
+      <select name="ativo" [(ngModel)]="form.ativo">
+        <option [ngValue]="true">Ativo</option>
+        <option [ngValue]="false">Inativo</option>
+      </select>
+    </label>
+
     <label>
       Senha {{ usuarioEditando ? '(preencha somente se quiser alterar)' : '*' }}
       <input type="password" name="senha" [(ngModel)]="form.senha" placeholder="Mínimo 6 caracteres">
@@ -61,6 +70,7 @@
           <th>Nome</th>
           <th>Email</th>
           <th>Perfil</th>
+          <th>Situação</th>
           <th>Data de criação</th>
           <th class="col-acoes">Ações</th>
         </tr>
@@ -71,11 +81,44 @@
           <td>{{ usuario.id }}</td>
           <td>{{ usuario.nome }}</td>
           <td>{{ usuario.email }}</td>
-          <td>{{ formatarData(usuario.dataCriacao) }}</td>
           <td>{{ usuario.perfil }}</td>
+          <td>
+            <span *ngIf="usuario.ativo && !usuario.bloqueado" class="status-ativo">
+              Ativo
+            </span>
+            <span *ngIf="!usuario.ativo" class="status-inativo">
+              Inativo
+            </span>
+            <span *ngIf="usuario.bloqueado" class="status-bloqueado">
+              Bloqueado
+            </span>
+          </td>
+          <td>{{ formatarData(usuario.dataCriacao) }}</td>
+
           <td class="acoes-linha">
-            <button type="button" class="btn-editar" (click)="editar(usuario)">✏️</button>
-            <button type="button" class="btn-excluir" (click)="excluir(usuario)">🗑️</button>
+            <button type="button" class="btn-acao btn-editar" title="Editar usuário" (click)="editar(usuario)">
+              ✏️
+            </button>
+
+            <button *ngIf="usuario.ativo" type="button" class="btn-acao btn-excluir" title="Inativar usuário"
+              (click)="excluir(usuario)">
+              ⛔
+            </button>
+
+            <button *ngIf="!usuario.ativo" type="button" class="btn-acao btn-reativar" title="Reativar usuário"
+              (click)="reativarUsuario(usuario)">
+              🔄
+            </button>
+
+            <button *ngIf="usuario.bloqueado" type="button" class="btn-acao btn-desbloquear" title="Desbloquear usuário"
+              (click)="desbloquearUsuario(usuario)">
+              🔓
+            </button>
+
+            <button type="button" class="btn-acao btn-senha" title="Redefinir senha"
+              (click)="redefinirSenhaUsuario(usuario)">
+              🔑
+            </button>
           </td>
         </tr>
       </tbody>

@@ -5,9 +5,9 @@ import br.com.prontuario.api.dto.LoginResponse;
 import br.com.prontuario.api.dto.TrocaSenhaObrigatoriaRequest;
 import br.com.prontuario.api.entity.Usuario;
 import br.com.prontuario.api.repository.UsuarioRepository;
+import br.com.prontuario.api.security.JwtService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import br.com.prontuario.api.security.JwtService;
 
 @Service
 public class AuthService {
@@ -33,26 +33,36 @@ public class AuthService {
             throw new RuntimeException("Usuário inativo");
         }
 
+        if (Boolean.TRUE.equals(usuario.getBloqueado())) {
+            throw new RuntimeException("USUARIO_BLOQUEADO");
+        }
+
         if (Boolean.TRUE.equals(usuario.getTrocaSenhaObrigatoria())) {
             throw new RuntimeException("TROCA_SENHA_OBRIGATORIA");
         }
 
-        boolean senhaValida = passwordEncoder.matches(request.getSenha(), usuario.getSenha());
+        boolean senhaValida = passwordEncoder.matches(
+                request.getSenha(),
+                usuario.getSenha());
 
         if (!senhaValida) {
-            int tentativas = usuario.getTentativasLogin() == null ? 0 : usuario.getTentativasLogin();
+            int tentativas = usuario.getTentativasLogin() == null
+                    ? 0
+                    : usuario.getTentativasLogin();
+
             tentativas++;
 
             usuario.setTentativasLogin(tentativas);
 
             if (tentativas >= 3) {
-                usuario.setTrocaSenhaObrigatoria(true);
+                usuario.setBloqueado(true);
+                usuario.setTrocaSenhaObrigatoria(false);
             }
 
             usuarioRepository.save(usuario);
 
             if (tentativas >= 3) {
-                throw new RuntimeException("TROCA_SENHA_OBRIGATORIA");
+                throw new RuntimeException("USUARIO_BLOQUEADO");
             }
 
             throw new RuntimeException("Email ou senha inválidos");
@@ -76,8 +86,12 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+        if (Boolean.TRUE.equals(usuario.getBloqueado())) {
+            throw new RuntimeException("Usuário bloqueado. Procure o administrador.");
+        }
+
         if (!Boolean.TRUE.equals(usuario.getTrocaSenhaObrigatoria())) {
-            throw new RuntimeException("Usuário não está bloqueado para troca de senha");
+            throw new RuntimeException("Usuário não está marcado para troca obrigatória de senha");
         }
 
         if (passwordEncoder.matches(request.getNovaSenha(), usuario.getSenha())) {
@@ -87,6 +101,7 @@ public class AuthService {
         usuario.setSenha(passwordEncoder.encode(request.getNovaSenha()));
         usuario.setTentativasLogin(0);
         usuario.setTrocaSenhaObrigatoria(false);
+        usuario.setBloqueado(false);
 
         usuarioRepository.save(usuario);
     }
