@@ -248,14 +248,32 @@ O sistema pode exigir troca obrigatória de senha.
 
 ---
 
-# ⚙️ Requisitos
+# ⚙️ Requisitos do sistema
 
-Necessário possuir instalado:
+Para funcionamento correto do Prontuário Odontológico, a máquina deve possuir:
 
-- Docker Desktop
-- Git
-- Java 17 (opcional para desenvolvimento)
-- Node.js (opcional para desenvolvimento)
+- Windows 10 ou Windows 11
+- Virtualização habilitada na BIOS
+- Mínimo de 4 GB de memória RAM
+- Docker Desktop instalado
+- Internet apenas para instalação inicial do Docker
+
+---
+
+## Instalação do Docker Desktop
+
+1. Baixe o Docker Desktop:
+
+https://www.docker.com/products/docker-desktop/
+
+2. Instale normalmente utilizando as opções padrão.
+
+3. Reinicie o computador após a instalação.
+
+4. Abra o Docker Desktop e aguarde até aparecer:
+
+```text
+Engine running
 
 ---
 
