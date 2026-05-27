@@ -20,8 +20,9 @@ com foco em:
 
 - simplicidade
 - funcionamento offline/local
-- segurança básica de acesso
+- segurança de acesso
 - facilidade de backup/restauração
+- independência de serviços externos
 
 ---
 
@@ -59,13 +60,19 @@ prontuario-odontologico/
 │
 ├── backend-spring/
 ├── frontend-angular/
-├── backups/
 ├── anexos/
+├── backups/
+├── scripts/
+│   ├── instalar.bat
+│   ├── iniciar.bat
+│   ├── parar.bat
+│   ├── backup.bat
+│   ├── restore.bat
+│   └── reset-admin.bat
+│
 ├── docker-compose.yml
-├── backup.bat
-├── restore.bat
-├── reset-admin.bat
-└── README.md
+├── README.md
+└── INSTALACAO.md
 ```
 
 ---
@@ -82,12 +89,22 @@ Perfis disponíveis:
 Recursos:
 
 - cadastro de usuários
-- edição
-- inativação
-- reativação
+- edição de usuários
+- inativação de usuários
+- reativação de usuários
 - redefinição de senha
 - desbloqueio de usuário
 - alteração de senha própria
+- proteção contra remoção do último ADMIN
+
+---
+
+## 👤 Gestão de pacientes
+
+- cadastro de pacientes
+- edição de pacientes
+- controle de dados pessoais
+- observações clínicas
 
 ---
 
@@ -120,7 +137,7 @@ Após 3 tentativas inválidas:
 Arquivo:
 
 ```text
-reset-admin.bat
+scripts/reset-admin.bat
 ```
 
 Função:
@@ -142,7 +159,7 @@ Senha temporária padrão:
 Arquivo:
 
 ```text
-backup.bat
+scripts/backup.bat
 ```
 
 O backup inclui:
@@ -169,7 +186,7 @@ backup-AAAA-MM-DD-HH-MM-SS/
 Arquivo:
 
 ```text
-restore.bat
+scripts/restore.bat
 ```
 
 Uso:
@@ -244,7 +261,7 @@ Senha:
 123456
 ```
 
-O sistema pode exigir troca obrigatória de senha.
+No primeiro acesso recomenda-se alterar imediatamente a senha do administrador.
 
 ---
 
@@ -260,20 +277,72 @@ Para funcionamento correto do Prontuário Odontológico, a máquina deve possuir
 
 ---
 
-## Instalação do Docker Desktop
+# 🐳 Instalação do Docker Desktop
 
-1. Baixe o Docker Desktop:
+## 1. Baixe o Docker Desktop
 
 https://www.docker.com/products/docker-desktop/
 
-2. Instale normalmente utilizando as opções padrão.
+---
 
-3. Reinicie o computador após a instalação.
+## 2. Instale normalmente
 
-4. Abra o Docker Desktop e aguarde até aparecer:
+Utilize as opções padrão do instalador.
+
+---
+
+## 3. Reinicie o computador
+
+Após a instalação, reinicie o Windows.
+
+---
+
+## 4. Abra o Docker Desktop
+
+Aguarde até aparecer:
 
 ```text
 Engine running
+```
+
+---
+
+# 🛠 Instalação do sistema
+
+Após instalar o Docker Desktop:
+
+1. Extraia a pasta do sistema.
+2. Abra a pasta do projeto.
+3. Execute:
+
+```text
+scripts\instalar.bat
+```
+
+O sistema irá:
+
+- criar os containers
+- configurar banco PostgreSQL
+- iniciar backend e frontend
+- abrir automaticamente o sistema no navegador
+
+---
+
+# ▶️ Uso diário
+
+## Iniciar sistema
+
+```text
+scripts\iniciar.bat
+```
+
+---
+
+## Parar sistema
+
+```text
+scripts\parar.bat
+```
 
 ---
 
@@ -285,6 +354,8 @@ Engine running
 cd backend-spring
 ./mvnw spring-boot:run
 ```
+
+---
 
 ## Frontend
 
@@ -304,6 +375,8 @@ ng serve
 - Bloqueio automático
 - Proteção contra remoção do último ADMIN
 - Proteção contra auto gerenciamento crítico
+- Reset emergencial offline
+- Persistência em banco PostgreSQL
 
 ---
 
@@ -314,10 +387,10 @@ Planejadas:
 - auditoria de ações
 - histórico de alterações
 - exportação PDF
-- dashboard
+- dashboard administrativo
 - notificações
 - assinatura digital
-- instalação desktop
+- instalação desktop (.exe)
 - criptografia de anexos
 - logs administrativos
 

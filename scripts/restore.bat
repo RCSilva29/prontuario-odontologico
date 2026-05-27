@@ -1,4 +1,5 @@
 @echo off
+cd /d %~dp0..
 setlocal
 
 set "BACKUP_DIR=%~1"

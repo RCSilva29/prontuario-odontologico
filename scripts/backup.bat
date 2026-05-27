@@ -1,4 +1,5 @@
 @echo off
+cd /d %~dp0..
 setlocal
 
 set DATA=%date:~6,4%-%date:~3,2%-%date:~0,2%

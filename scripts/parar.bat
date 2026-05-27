@@ -1,4 +1,5 @@
 @echo off
+cd /d %~dp0..
 title Prontuario Odontologico - Parar
 
 echo ==========================================
