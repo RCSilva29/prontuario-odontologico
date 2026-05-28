@@ -1,59 +1,85 @@
 # 🦷 Prontuário Odontológico
 
-Sistema desktop/local para gerenciamento de consultório odontológico.
+**Versão 1.0**
+
+Sistema desktop/local para gerenciamento de consultórios odontológicos, desenvolvido para funcionamento em ambiente local, com foco em simplicidade, segurança e independência de serviços externos.
 
 ---
 
-# 📌 Objetivo do sistema
+# 📌 Objetivo do Sistema
 
-O sistema foi criado para permitir o gerenciamento local de:
+O Prontuário Odontológico foi desenvolvido para permitir o gerenciamento de:
 
-- usuários
-- pacientes
-- prontuários
-- atendimentos
-- anamneses
-- odontogramas
-- anexos/documentos
+* Usuários
+* Pacientes
+* Prontuários
+* Atendimentos
+* Anamneses
+* Odontogramas
+* Documentos e anexos
 
-com foco em:
+Principais características:
 
-- simplicidade
-- funcionamento offline/local
-- segurança de acesso
-- facilidade de backup/restauração
-- independência de serviços externos
+* Funcionamento local
+* Não depende de internet após instalação
+* Controle de acesso por usuários
+* Backup e restauração de dados
+* Segurança de autenticação
 
 ---
 
-# 🚀 Tecnologias utilizadas
+# 📊 Status do Projeto
+
+✅ Em utilização local
+
+✅ Controle de usuários
+
+✅ Controle de pacientes
+
+✅ Autenticação JWT
+
+✅ Controle de permissões
+
+✅ Backup e restauração
+
+✅ Reset emergencial de administrador
+
+🚧 Auditoria de ações
+
+🚧 Exportação PDF
+
+🚧 Dashboard administrativo
+
+---
+
+# 🚀 Tecnologias Utilizadas
 
 ## Frontend
 
-- Angular
-- TypeScript
-- SCSS
+* Angular
+* TypeScript
+* SCSS
 
 ## Backend
 
-- Java 17
-- Spring Boot
-- Spring Security
-- JWT Authentication
-- BCrypt
+* Java 17
+* Spring Boot
+* Spring Security
+* JWT Authentication
+* BCrypt
 
-## Banco de dados
+## Banco de Dados
 
-- PostgreSQL 16
+* PostgreSQL 16
 
 ## Infraestrutura
 
-- Docker
-- Docker Compose
+* Docker
+* Docker Compose
 
 ---
 
-# 📁 Estrutura do projeto
+# 📁 Estrutura do Projeto
 
 ```text
 prontuario-odontologico/
@@ -63,12 +89,10 @@ prontuario-odontologico/
 ├── anexos/
 ├── backups/
 ├── scripts/
-│   ├── instalar.bat
-│   ├── iniciar.bat
-│   ├── parar.bat
-│   ├── backup.bat
-│   ├── restore.bat
-│   └── reset-admin.bat
+│
+├── Prontuário Odontológico
+├── Encerrar Prontuário
+├── Fazer Backup
 │
 ├── docker-compose.yml
 ├── README.md
@@ -77,181 +101,63 @@ prontuario-odontologico/
 
 ---
 
-# ✅ Funcionalidades implementadas
+# ✅ Funcionalidades Implementadas
 
-## 👥 Controle de usuários
+## 👥 Controle de Usuários
 
 Perfis disponíveis:
 
-- ADMIN
-- DENTISTA
+* ADMIN
+* DENTISTA
 
 Recursos:
 
-- cadastro de usuários
-- edição de usuários
-- inativação de usuários
-- reativação de usuários
-- redefinição de senha
-- desbloqueio de usuário
-- alteração de senha própria
-- proteção contra remoção do último ADMIN
+* Cadastro de usuários
+* Edição de usuários
+* Inativação de usuários
+* Reativação de usuários
+* Desbloqueio de usuários
+* Redefinição de senha
+* Alteração de senha própria
+* Proteção contra remoção do último administrador
 
 ---
 
-## 👤 Gestão de pacientes
+## 👤 Gestão de Pacientes
 
-- cadastro de pacientes
-- edição de pacientes
-- controle de dados pessoais
-- observações clínicas
+* Cadastro de pacientes
+* Alteração de pacientes
+* Controle de dados pessoais
+* Histórico clínico
+* Observações clínicas
 
 ---
 
-## 🔐 Segurança de login
+## 🔐 Segurança
 
 O sistema possui:
 
-- autenticação JWT
-- senha criptografada com BCrypt
-- bloqueio após 3 tentativas inválidas
-- proteção contra auto desbloqueio
-- proteção contra auto redefinição de senha
-- proteção contra remoção do último ADMIN
-- reset emergencial do administrador
+* Autenticação JWT
+* Senhas criptografadas com BCrypt
+* Bloqueio automático após tentativas inválidas
+* Controle de perfis de acesso
+* Proteção contra auto desbloqueio
+* Proteção contra auto redefinição de senha
+* Reset emergencial de administrador
 
 ---
 
-# 🚫 Fluxo de bloqueio
+# 🚫 Fluxo de Bloqueio
 
-Após 3 tentativas inválidas:
+Após 3 tentativas de login inválidas:
 
-- o usuário é bloqueado
-- login é impedido
-- apenas outro ADMIN pode desbloquear
-
----
-
-# 🛠 Reset emergencial do ADMIN
-
-Arquivo:
-
-```text
-scripts/reset-admin.bat
-```
-
-Função:
-
-- desbloquear admin principal
-- redefinir senha temporária
-- obrigar troca de senha
-
-Senha temporária padrão:
-
-```text
-123456
-```
+* O usuário é bloqueado
+* O acesso é impedido
+* Apenas outro administrador poderá realizar o desbloqueio
 
 ---
 
-# 💾 Backup do sistema
-
-Arquivo:
-
-```text
-scripts/backup.bat
-```
-
-O backup inclui:
-
-- banco PostgreSQL
-- anexos/documentos
-
-Arquivos gerados em:
-
-```text
-/backups
-```
-
-Formato:
-
-```text
-backup-AAAA-MM-DD-HH-MM-SS/
-```
-
----
-
-# ♻️ Restauração do sistema
-
-Arquivo:
-
-```text
-scripts/restore.bat
-```
-
-Uso:
-
-```bash
-restore.bat "backups\NOME_DO_BACKUP"
-```
-
-A restauração:
-
-- recria schema do banco
-- restaura dados
-- restaura anexos
-
----
-
-# 🐳 Execução com Docker
-
-## Subir containers
-
-```bash
-docker compose up -d
-```
-
-## Rebuild completo
-
-```bash
-docker compose up --build
-```
-
-## Derrubar containers
-
-```bash
-docker compose down
-```
-
----
-
-# 🌐 Portas utilizadas
-
-| Serviço | Porta |
-|---|---|
-| Frontend Angular | 4200 |
-| Backend Spring | 8080 |
-| PostgreSQL | 5432 |
-
----
-
-# 🔑 Acesso ao sistema
-
-Frontend:
-
-```text
-http://localhost:4200
-```
-
-Backend:
-
-```text
-http://localhost:8080
-```
-
----
-
-# 👤 Usuário administrador inicial
+# 🔑 Usuário Administrador Inicial
 
 ```text
 Email:
@@ -261,92 +167,105 @@ Senha:
 123456
 ```
 
-No primeiro acesso recomenda-se alterar imediatamente a senha do administrador.
+Após o primeiro acesso recomenda-se alterar imediatamente a senha.
 
 ---
 
-# ⚙️ Requisitos do sistema
+# 🛠 Instalação
 
-Para funcionamento correto do Prontuário Odontológico, a máquina deve possuir:
-
-- Windows 10 ou Windows 11
-- Virtualização habilitada na BIOS
-- Mínimo de 4 GB de memória RAM
-- Docker Desktop instalado
-- Internet apenas para instalação inicial do Docker
-
----
-
-# 🐳 Instalação do Docker Desktop
-
-## 1. Baixe o Docker Desktop
-
-https://www.docker.com/products/docker-desktop/
-
----
-
-## 2. Instale normalmente
-
-Utilize as opções padrão do instalador.
-
----
-
-## 3. Reinicie o computador
-
-Após a instalação, reinicie o Windows.
-
----
-
-## 4. Abra o Docker Desktop
-
-Aguarde até aparecer:
+Consulte o arquivo:
 
 ```text
-Engine running
+INSTALACAO.md
+```
+
+para instruções completas de instalação.
+
+---
+
+# ▶️ Utilização Diária
+
+## Abrir Sistema
+
+Clique em:
+
+```text
+🦷 Prontuário Odontológico
 ```
 
 ---
 
-# 🛠 Instalação do sistema
+## Encerrar Sessão
 
-Após instalar o Docker Desktop:
-
-1. Extraia a pasta do sistema.
-2. Abra a pasta do projeto.
-3. Execute:
+Utilize o botão:
 
 ```text
-scripts\instalar.bat
+Sair
 ```
 
-O sistema irá:
-
-- criar os containers
-- configurar banco PostgreSQL
-- iniciar backend e frontend
-- abrir automaticamente o sistema no navegador
+disponível dentro do sistema.
 
 ---
 
-# ▶️ Uso diário
+## Encerrar Completamente o Sistema
 
-## Iniciar sistema
+Quando desejar desligar os serviços do sistema:
 
 ```text
-scripts\iniciar.bat
+🛑 Encerrar Prontuário
 ```
 
 ---
 
-## Parar sistema
+# 💾 Backup do Sistema
+
+Para gerar uma cópia de segurança:
 
 ```text
-scripts\parar.bat
+💾 Fazer Backup
+```
+
+Os arquivos serão armazenados na pasta:
+
+```text
+backups
 ```
 
 ---
 
-# 💻 Desenvolvimento local
+# ♻️ Restauração do Sistema
+
+Utilize:
+
+```text
+scripts\restore.bat
+```
+
+Exemplo:
+
+```text
+restore.bat "backups\backup-AAAA-MM-DD-HH-MM-SS"
+```
+
+---
+
+# 🚨 Reset Emergencial do Administrador
+
+Em caso de bloqueio de todos os administradores:
+
+```text
+scripts\reset-admin.bat
+```
+
+O procedimento:
+
+* Desbloqueia o administrador principal
+* Define senha temporária
+* Obriga troca de senha no próximo acesso
+
+---
+
+# 💻 Desenvolvimento Local
 
 ## Backend
 
@@ -354,8 +273,6 @@ scripts\parar.bat
 cd backend-spring
 ./mvnw spring-boot:run
 ```
-
----
 
 ## Frontend
 
@@ -367,43 +284,44 @@ ng serve
 
 ---
 
-# 🔒 Segurança implementada
+# 🔒 Recursos de Segurança
 
-- JWT Authentication
-- BCrypt Password
-- Controle de perfis
-- Bloqueio automático
-- Proteção contra remoção do último ADMIN
-- Proteção contra auto gerenciamento crítico
-- Reset emergencial offline
-- Persistência em banco PostgreSQL
+* JWT Authentication
+* BCrypt Password
+* Controle de Perfis
+* Bloqueio Automático
+* Proteção contra Auto Gerenciamento Crítico
+* Proteção contra Remoção do Último Administrador
+* Persistência em PostgreSQL
 
 ---
 
-# 📈 Melhorias futuras
+# 📈 Melhorias Futuras
 
 Planejadas:
 
-- auditoria de ações
-- histórico de alterações
-- exportação PDF
-- dashboard administrativo
-- notificações
-- assinatura digital
-- instalação desktop (.exe)
-- criptografia de anexos
-- logs administrativos
+* Auditoria de ações
+* Histórico de alterações
+* Exportação PDF
+* Dashboard administrativo
+* Notificações
+* Assinatura digital
+* Instalador Windows (.exe)
+* Criptografia de anexos
+* Logs administrativos
 
 ---
 
 # 📌 Observações
 
-Este sistema foi desenvolvido para utilização local/privada em consultórios odontológicos.
+Este sistema foi desenvolvido para utilização local em consultórios odontológicos.
 
-Não depende de internet para funcionamento após instalação.
+Após instalado, não depende de internet para funcionamento.
 
 ---
 
 # 📄 Licença
 
-Projeto privado. Uso interno/restrito.
+Projeto privado.
+
+Uso interno e restrito.

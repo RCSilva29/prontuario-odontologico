@@ -32,5 +32,3 @@ echo Abrindo no navegador...
 echo.
 
 start http://localhost:4200/login
-
-pause

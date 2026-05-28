@@ -1,59 +1,37 @@
-# 🛠 Instalação do Prontuário Odontológico
+# 🦷 Instalação do Prontuário Odontológico
 
-Este documento descreve o processo completo de instalação do sistema Prontuário Odontológico.
+## Requisitos
 
----
+Antes de instalar o sistema, certifique-se de que o computador possui:
 
-# 📋 Requisitos mínimos
-
-A máquina deve possuir:
-
-- Windows 10 ou Windows 11
-- Virtualização habilitada na BIOS
-- Mínimo de 4 GB de memória RAM
-- Docker Desktop instalado
+* Windows 10 ou Windows 11
+* Docker Desktop instalado
 
 ---
 
-# 🐳 Instalação do Docker Desktop
+## Instalação do Docker Desktop
 
-## 1. Baixar Docker Desktop
-
-Acesse:
+1. Acesse:
 
 https://www.docker.com/products/docker-desktop/
 
----
+2. Baixe e instale o Docker Desktop.
 
-## 2. Executar instalação
+3. Reinicie o computador após a instalação.
 
-Instale utilizando as opções padrão do instalador.
+4. Abra o Docker Desktop.
 
----
-
-## 3. Reiniciar computador
-
-Após finalizar a instalação, reinicie o Windows.
-
----
-
-## 4. Abrir Docker Desktop
-
-Abra o Docker Desktop e aguarde até aparecer:
+5. Aguarde aparecer a mensagem:
 
 ```text
 Engine running
 ```
 
-O Docker precisa permanecer aberto durante o uso do sistema.
-
 ---
 
-# 📦 Instalação do sistema
+## Instalação do Sistema
 
-## 1. Extrair arquivos
-
-Extraia a pasta do sistema em qualquer local do computador.
+1. Extraia a pasta do Prontuário Odontológico para o computador.
 
 Exemplo:
 
@@ -61,47 +39,57 @@ Exemplo:
 C:\ProntuarioOdontologico
 ```
 
----
-
-## 2. Abrir pasta scripts
-
-Abra:
+2. Execute:
 
 ```text
-scripts
+INSTALAR_PRONTUARIO
+```
+
+3. Aguarde a conclusão da instalação.
+
+Pronto.
+
+---
+
+## Utilização
+
+### Abrir o sistema
+
+Clique em:
+
+```text
+🦷 Prontuário Odontológico
+```
+
+O navegador será aberto automaticamente.
+
+---
+
+### Encerrar o sistema
+
+Ao terminar o uso, clique em:
+
+```text
+Sair
+```
+
+dentro do próprio sistema.
+
+---
+
+### Encerrar completamente o Prontuário
+
+Somente quando desejar desligar o sistema ou realizar manutenção:
+
+```text
+🛑 Encerrar Prontuário
 ```
 
 ---
 
-## 3. Executar instalação inicial
+## Primeiro acesso
 
-Execute:
-
-```text
-instalar.bat
-```
-
-O sistema irá automaticamente:
-
-- criar containers Docker
-- configurar banco PostgreSQL
-- iniciar backend
-- iniciar frontend
-- abrir sistema no navegador
-
----
-
-# 🔑 Primeiro acesso
-
-Após instalação:
-
-Acesse:
-
-```text
-http://localhost:4200
-```
-
-Usuário inicial:
+Utilize:
 
 ```text
 Email:
@@ -111,116 +99,27 @@ Senha:
 123456
 ```
 
-Recomenda-se alterar imediatamente a senha do administrador.
+Após o primeiro acesso, altere a senha do administrador.
 
 ---
 
-# ▶️ Uso diário
+## Backup
 
-## Iniciar sistema
-
-Execute:
+Para gerar uma cópia de segurança:
 
 ```text
-scripts\iniciar.bat
+💾 Fazer Backup
 ```
 
 ---
 
-## ⏹ Encerrar sistema
+## Em caso de problemas
 
-Execute:
-
-```text
-scripts\parar.bat
-```
-
----
-
-# 💾 Backup do sistema
-
-Para gerar backup:
+1. Verifique se o Docker Desktop está aberto.
+2. Reinicie o computador.
+3. Abra novamente o Docker Desktop.
+4. Execute novamente:
 
 ```text
-scripts\backup.bat
+🦷 Prontuário Odontológico
 ```
-
-Os arquivos serão salvos na pasta:
-
-```text
-backups
-```
-
----
-
-# ♻️ Restaurar backup
-
-Para restaurar:
-
-```text
-scripts\restore.bat
-```
-
-Exemplo:
-
-```text
-restore.bat "backups\backup-2026-05-26-15-56-47"
-```
-
----
-
-# 🚨 Reset emergencial do administrador
-
-Caso todos os administradores sejam bloqueados:
-
-Execute:
-
-```text
-scripts\reset-admin.bat
-```
-
-Esse procedimento:
-
-- desbloqueia administrador principal
-- redefine senha temporária
-- obriga troca de senha
-
----
-
-# ⚠️ Problemas comuns
-
-## Docker não encontrado
-
-Verifique se o Docker Desktop está instalado.
-
----
-
-## Docker não iniciado
-
-Abra manualmente o Docker Desktop.
-
----
-
-## Virtualização desabilitada
-
-Ative a virtualização na BIOS da máquina.
-
----
-
-# 📌 Observações importantes
-
-- O sistema funciona localmente/offline.
-- Não depende de internet após instalação.
-- O Docker Desktop deve permanecer aberto durante o uso.
-- Não remover manualmente os containers Docker.
-- Recomenda-se backup periódico.
-
----
-
-# 📞 Suporte
-
-Em caso de problemas:
-
-- verificar se o Docker Desktop está aberto
-- reiniciar o computador
-- executar novamente `iniciar.bat`

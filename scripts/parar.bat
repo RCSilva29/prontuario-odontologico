@@ -18,5 +18,3 @@ if errorlevel 1 (
 echo.
 echo Sistema parado com sucesso.
 echo.
-
-pause
