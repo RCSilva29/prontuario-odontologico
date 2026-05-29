@@ -47,6 +47,7 @@ public class UsuarioService {
         }
 
         validarPerfil(request.getPerfil());
+        validarDadosProfissionais(request);
 
         Usuario usuario = new Usuario();
         usuario.setNome(request.getNome());
@@ -57,6 +58,8 @@ public class UsuarioService {
         usuario.setBloqueado(false);
         usuario.setTentativasLogin(0);
         usuario.setTrocaSenhaObrigatoria(false);
+
+        preencherDadosProfissionais(usuario, request);
 
         return repository.save(usuario);
     }
@@ -76,6 +79,7 @@ public class UsuarioService {
                 });
 
         validarPerfil(request.getPerfil());
+        validarDadosProfissionais(request);
 
         usuario.setNome(request.getNome());
         usuario.setEmail(request.getEmail());
@@ -88,6 +92,8 @@ public class UsuarioService {
         if (request.getSenha() != null && !request.getSenha().isBlank()) {
             usuario.setSenha(passwordEncoder.encode(request.getSenha()));
         }
+
+        preencherDadosProfissionais(usuario, request);
 
         return repository.save(usuario);
     }
@@ -187,5 +193,28 @@ public class UsuarioService {
         if (!"ADMIN".equals(perfil) && !"DENTISTA".equals(perfil)) {
             throw new RuntimeException("Perfil inválido");
         }
+    }
+
+    private void validarDadosProfissionais(UsuarioRequest request) {
+        if ("DENTISTA".equals(request.getPerfil())) {
+            if (request.getEspecialidade() == null || request.getEspecialidade().isBlank()) {
+                throw new RuntimeException("Especialidade é obrigatória para dentista");
+            }
+
+            if (request.getCro() == null || request.getCro().isBlank()) {
+                throw new RuntimeException("CRO é obrigatório para dentista");
+            }
+        }
+    }
+
+    private void preencherDadosProfissionais(Usuario usuario, UsuarioRequest request) {
+        if ("DENTISTA".equals(request.getPerfil())) {
+            usuario.setEspecialidade(request.getEspecialidade());
+            usuario.setCro(request.getCro());
+            return;
+        }
+
+        usuario.setEspecialidade(null);
+        usuario.setCro(null);
     }
 }

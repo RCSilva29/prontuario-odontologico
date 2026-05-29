@@ -15,6 +15,17 @@ public class UsuarioResponse {
     private Boolean trocaSenhaObrigatoria;
     private LocalDateTime dataCriacao;
     private String perfil;
+    private String especialidade;
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public String getCro() {
+        return cro;
+    }
+
+    private String cro;
 
     public UsuarioResponse(Usuario usuario) {
         this.id = usuario.getId();
@@ -26,6 +37,8 @@ public class UsuarioResponse {
         this.trocaSenhaObrigatoria = usuario.getTrocaSenhaObrigatoria();
         this.dataCriacao = usuario.getDataCriacao();
         this.perfil = usuario.getPerfil();
+        this.especialidade = usuario.getEspecialidade();
+        this.cro = usuario.getCro();
     }
 
     public Long getId() {

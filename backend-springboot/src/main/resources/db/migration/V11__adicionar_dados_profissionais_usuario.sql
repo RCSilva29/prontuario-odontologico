@@ -1,0 +1,5 @@
+ALTER TABLE usuario
+ADD COLUMN especialidade VARCHAR(150);
+
+ALTER TABLE usuario
+ADD COLUMN cro VARCHAR(50);

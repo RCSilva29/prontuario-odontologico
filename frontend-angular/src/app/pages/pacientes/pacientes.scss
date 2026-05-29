@@ -26,6 +26,12 @@ th {
 
 .erro {
   color: #dc2626;
+  font-weight: 600;
+}
+
+.sucesso {
+  color: #15803d;
+  font-weight: 600;
 }
 
 .cabecalho {
@@ -44,7 +50,7 @@ th {
 }
 
 .coluna-acoes {
-  width: 120px;
+  width: 160px;
   text-align: center;
 }
 
@@ -70,6 +76,10 @@ th {
   background: #eef4ff;
 }
 
+.atestado {
+  background: #ecfeff;
+}
+
 .excluir {
   background: #fee2e2;
 }
@@ -82,4 +92,87 @@ th {
 
 .link-paciente:hover {
   text-decoration: underline;
+}
+
+/* MODAL ATESTADO */
+
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+
+.modal-card {
+  background: #ffffff;
+  width: 640px;
+  max-width: 100%;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+}
+
+.modal-card h2 {
+  margin: 0 0 18px 0;
+  color: #0f172a;
+}
+
+.modal-card label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+}
+
+.modal-card textarea {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.modal-card textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.acoes-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn-primary,
+.btn-secondary {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
 }

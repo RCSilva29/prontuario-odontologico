@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { Paciente } from '../../models/paciente.model';
 import { PacienteService } from '../../services/paciente.service';
+import { DocumentoService } from '../../services/documento.service';
+
 import { AnamneseCard } from '../../components/anamnese-card/anamnese-card';
 import { AtendimentosCard } from '../../components/atendimentos-card/atendimentos-card';
 import { OdontogramaCard } from '../../components/odontograma-card/odontograma-card';
@@ -11,7 +15,15 @@ import { AnexosCard } from '../../components/anexos-card/anexos-card';
 @Component({
   selector: 'app-paciente-detalhe',
   standalone: true,
-  imports: [CommonModule, RouterLink, AnamneseCard, AtendimentosCard, OdontogramaCard, AnexosCard],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    AnamneseCard,
+    AtendimentosCard,
+    OdontogramaCard,
+    AnexosCard
+  ],
   templateUrl: './paciente-detalhe.html',
   styleUrl: './paciente-detalhe.scss'
 })
@@ -21,10 +33,14 @@ export class PacienteDetalhe implements OnInit {
   carregando = false;
   erro = '';
 
+  exibindoAtestado = false;
+  textoAtestado = '';
+  gerandoAtestado = false;
+
   constructor(
     private route: ActivatedRoute,
     private pacienteService: PacienteService,
-
+    private documentoService: DocumentoService
   ) { }
 
   ngOnInit(): void {
@@ -34,6 +50,7 @@ export class PacienteDetalhe implements OnInit {
 
   carregarPaciente(id: number): void {
     this.carregando = true;
+    this.erro = '';
 
     this.pacienteService.buscarPorId(id).subscribe({
       next: (dados) => {
@@ -45,6 +62,65 @@ export class PacienteDetalhe implements OnInit {
         this.carregando = false;
       }
     });
+  }
+
+  abrirAtestado(): void {
+    this.erro = '';
+    this.exibindoAtestado = true;
+    this.textoAtestado =
+      'Atesto para os devidos fins que o paciente compareceu ao atendimento odontológico nesta data.';
+  }
+
+  cancelarAtestado(): void {
+    this.exibindoAtestado = false;
+    this.textoAtestado = '';
+    this.gerandoAtestado = false;
+  }
+
+  gerarAtestado(): void {
+    this.erro = '';
+
+    if (!this.paciente) {
+      this.erro = 'Paciente não identificado para gerar atestado';
+      return;
+    }
+
+    if (!this.textoAtestado.trim()) {
+      this.erro = 'Informe o texto do atestado';
+      return;
+    }
+
+    this.gerandoAtestado = true;
+
+    this.documentoService
+      .gerarAtestado(this.paciente.id, this.textoAtestado.trim())
+      .subscribe({
+        next: (pdf) => {
+          this.gerandoAtestado = false;
+
+          const blob = new Blob([pdf], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = this.nomeArquivoAtestado();
+
+          document.body.appendChild(link);
+          link.click();
+
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          this.cancelarAtestado();
+        },
+        error: (erro) => {
+          this.gerandoAtestado = false;
+          this.erro =
+            erro?.error?.erro ||
+            erro?.error?.message ||
+            'Erro ao gerar atestado';
+        }
+      });
   }
 
   formatarCpf(cpf: string): string {
@@ -85,4 +161,20 @@ export class PacienteDetalhe implements OnInit {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
   }
 
+  nomeArquivoAtestado(): string {
+    const nomePaciente = (this.paciente?.nome || 'paciente')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+
+    const hoje = new Date();
+
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+
+    return `${nomePaciente}_${dia}_${mes}_${ano}.pdf`;
+  }
 }

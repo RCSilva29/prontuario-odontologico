@@ -1,4 +1,5 @@
 <section class="pacientes">
+
   <div class="cabecalho">
     <h1>Pacientes</h1>
 
@@ -10,6 +11,8 @@
   <p *ngIf="carregando">Carregando pacientes...</p>
 
   <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <p *ngIf="sucesso" class="sucesso">{{ sucesso }}</p>
 
   <table *ngIf="!carregando && pacientes.length > 0">
     <thead>
@@ -25,17 +28,23 @@
 
     <tbody>
       <tr *ngFor="let paciente of pacientes" class="linha-click">
+
         <td>{{ paciente.id }}</td>
+
         <td>
           <a class="link-paciente" [routerLink]="['/pacientes', paciente.id]">
-
             {{ paciente.nome }}
           </a>
         </td>
+
         <td>{{ formatarCpf(paciente.cpf) }}</td>
+
         <td>{{ formatarTelefone(paciente.telefone) }}</td>
+
         <td>{{ paciente.email }}</td>
+
         <td class="acoes-linha">
+
           <a class="icone editar" [routerLink]="['/pacientes', paciente.id, 'editar']" title="Editar paciente">
             ✏️
           </a>
@@ -44,7 +53,9 @@
             (click)="excluirPaciente($event, paciente)">
             🗑️
           </button>
+
         </td>
+
       </tr>
     </tbody>
   </table>
@@ -52,4 +63,40 @@
   <p *ngIf="!carregando && pacientes.length === 0">
     Nenhum paciente cadastrado.
   </p>
+
 </section>
+
+<!-- MODAL DE ATESTADO -->
+
+<div *ngIf="exibindoAtestado" class="modal-fundo">
+
+  <div class="modal-card">
+
+    <h2>Gerar Atestado</h2>
+
+    <label>
+      Texto do atestado *
+
+      <textarea rows="8" name="textoAtestado" [(ngModel)]="textoAtestado">
+      </textarea>
+    </label>
+
+    <div class="acoes-form">
+
+      <button type="button" class="btn-primary" [disabled]="gerandoAtestado" (click)="gerarAtestado()">
+
+        {{ gerandoAtestado ? 'Gerando PDF...' : 'Gerar PDF' }}
+
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarAtestado()">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

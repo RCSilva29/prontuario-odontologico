@@ -35,6 +35,16 @@
       </select>
     </label>
 
+    <label *ngIf="form.perfil === 'DENTISTA'">
+      Especialidade *
+      <input type="text" name="especialidade" [(ngModel)]="form.especialidade" placeholder="Ex.: Cirurgião-Dentista">
+    </label>
+
+    <label *ngIf="form.perfil === 'DENTISTA'">
+      CRO *
+      <input type="text" name="cro" [(ngModel)]="form.cro" placeholder="Ex.: CRO-RJ 12345">
+    </label>
+
     <label *ngIf="usuarioEditando">
       Situação *
 
@@ -116,7 +126,7 @@
             </button>
 
             <button type="button" class="btn-acao btn-senha" title="Redefinir senha"
-              (click)="redefinirSenhaUsuario(usuario)">
+              (click)="abrirModalRedefinirSenha(usuario)">
               🔑
             </button>
           </td>
@@ -130,3 +140,41 @@
   </div>
 
 </section>
+
+<div *ngIf="exibindoModalSenha" class="modal-fundo">
+
+  <div class="modal-card">
+
+    <h2>Redefinir senha</h2>
+
+    <p class="modal-descricao" *ngIf="usuarioSenha">
+      Informe a nova senha temporária para <strong>{{ usuarioSenha.nome }}</strong>.
+    </p>
+
+    <label>
+      Nova senha temporária *
+      <input type="password" name="novaSenhaTemporaria" [(ngModel)]="novaSenhaTemporaria"
+        placeholder="Mínimo 6 caracteres">
+    </label>
+
+    <label>
+      Confirmar nova senha *
+      <input type="password" name="confirmacaoNovaSenhaTemporaria" [(ngModel)]="confirmacaoNovaSenhaTemporaria"
+        placeholder="Digite novamente a senha">
+    </label>
+
+    <div class="acoes-form">
+
+      <button type="button" class="btn-primary" [disabled]="redefinindoSenha" (click)="confirmarRedefinicaoSenha()">
+        {{ redefinindoSenha ? 'Redefinindo...' : 'Redefinir senha' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarRedefinicaoSenha()">
+        Cancelar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

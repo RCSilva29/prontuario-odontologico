@@ -8,6 +8,8 @@ public class LoginResponse {
     private String mensagem;
     private String perfil;
     private String token;
+    private String especialidade;
+    private String cro;
 
     public LoginResponse(
             Long id,

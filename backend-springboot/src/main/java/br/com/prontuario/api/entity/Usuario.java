@@ -43,6 +43,12 @@ public class Usuario {
     @Column(nullable = false)
     private Boolean bloqueado = false;
 
+    @Column(length = 150)
+    private String especialidade;
+
+    @Column(length = 50)
+    private String cro;
+
     public Boolean getBloqueado() {
         return bloqueado;
     }

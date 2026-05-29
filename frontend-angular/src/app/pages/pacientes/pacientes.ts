@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { PacienteService } from '../../services/paciente.service';
 import { Paciente } from '../../models/paciente.model';
+import { DocumentoService } from '../../services/documento.service';
 
 @Component({
   selector: 'app-pacientes',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.scss'
 })
@@ -16,8 +19,17 @@ export class Pacientes implements OnInit {
   pacientes: Paciente[] = [];
   carregando = false;
   erro = '';
+  sucesso = '';
 
-  constructor(private pacienteService: PacienteService) {}
+  pacienteAtestadoId?: number;
+  textoAtestado = '';
+  gerandoAtestado = false;
+  exibindoAtestado = false;
+
+  constructor(
+    private pacienteService: PacienteService,
+    private documentoService: DocumentoService
+  ) { }
 
   ngOnInit(): void {
     this.carregarPacientes();
@@ -25,6 +37,7 @@ export class Pacientes implements OnInit {
 
   carregarPacientes(): void {
     this.carregando = true;
+    this.erro = '';
 
     this.pacienteService.listar().subscribe({
       next: (dados) => {
@@ -65,6 +78,9 @@ export class Pacientes implements OnInit {
   excluirPaciente(event: Event, paciente: Paciente): void {
     event.stopPropagation();
 
+    this.erro = '';
+    this.sucesso = '';
+
     const confirmar = confirm(`Confirma a exclusão do paciente "${paciente.nome}"?`);
 
     if (!confirmar) {
@@ -73,11 +89,70 @@ export class Pacientes implements OnInit {
 
     this.pacienteService.excluir(paciente.id).subscribe({
       next: () => {
+        this.sucesso = 'Paciente excluído com sucesso';
         this.carregarPacientes();
       },
       error: () => {
         this.erro = 'Erro ao excluir paciente';
       }
     });
+  }
+
+  abrirAtestado(event: Event, pacienteId: number): void {
+    event.stopPropagation();
+
+    this.erro = '';
+    this.sucesso = '';
+    this.pacienteAtestadoId = pacienteId;
+    this.exibindoAtestado = true;
+
+    this.textoAtestado =
+      'Atesto para os devidos fins que o paciente compareceu ao atendimento odontológico nesta data.';
+  }
+
+  cancelarAtestado(): void {
+    this.exibindoAtestado = false;
+    this.pacienteAtestadoId = undefined;
+    this.textoAtestado = '';
+    this.gerandoAtestado = false;
+  }
+
+  gerarAtestado(): void {
+    this.erro = '';
+    this.sucesso = '';
+
+    if (!this.pacienteAtestadoId) {
+      this.erro = 'Paciente não identificado para gerar atestado';
+      return;
+    }
+
+    if (!this.textoAtestado.trim()) {
+      this.erro = 'Informe o texto do atestado';
+      return;
+    }
+
+    this.gerandoAtestado = true;
+
+    this.documentoService
+      .gerarAtestado(this.pacienteAtestadoId, this.textoAtestado.trim())
+      .subscribe({
+        next: (pdf) => {
+          this.gerandoAtestado = false;
+
+          const blob = new Blob([pdf], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+
+          window.open(url, '_blank');
+
+          this.cancelarAtestado();
+        },
+        error: (erro) => {
+          this.gerandoAtestado = false;
+          this.erro =
+            erro?.error?.erro ||
+            erro?.error?.message ||
+            'Erro ao gerar atestado';
+        }
+      });
   }
 }

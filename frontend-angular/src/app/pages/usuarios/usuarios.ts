@@ -31,6 +31,12 @@ export class Usuarios implements OnInit {
   salvando = false;
   exibindoFormulario = false;
 
+  usuarioSenha?: Usuario;
+  novaSenhaTemporaria = '';
+  confirmacaoNovaSenhaTemporaria = '';
+  redefinindoSenha = false;
+  exibindoModalSenha = false;
+
   constructor(private usuarioService: UsuarioService) { }
 
   ngOnInit(): void {
@@ -79,7 +85,9 @@ export class Usuarios implements OnInit {
       email: usuario.email,
       senha: '',
       perfil: usuario.perfil,
-      ativo: usuario.ativo
+      ativo: usuario.ativo,
+      especialidade: usuario.especialidade,
+      cro: usuario.cro
     };
   }
 
@@ -113,6 +121,18 @@ export class Usuarios implements OnInit {
       return;
     }
 
+    if (this.form.perfil === 'DENTISTA') {
+      if (!this.form.especialidade?.trim()) {
+        this.erro = 'Informe a especialidade do dentista';
+        return;
+      }
+
+      if (!this.form.cro?.trim()) {
+        this.erro = 'Informe o CRO do dentista';
+        return;
+      }
+    }
+
     if (!this.usuarioEditando && !this.form.senha?.trim()) {
       this.erro = 'Informe a senha';
       return;
@@ -141,10 +161,11 @@ export class Usuarios implements OnInit {
           : 'Usuário cadastrado com sucesso';
         this.carregarUsuarios();
       },
-      error: () => {
-        this.erro = editando
-          ? 'Erro ao atualizar usuário'
-          : 'Erro ao cadastrar usuário';
+      error: (erro) => {
+        this.erro =
+          erro?.error?.erro ||
+          erro?.error?.message ||
+          (editando ? 'Erro ao atualizar usuário' : 'Erro ao cadastrar usuário');
         this.salvando = false;
       }
     });
@@ -194,27 +215,57 @@ export class Usuarios implements OnInit {
     });
   }
 
-  redefinirSenhaUsuario(usuario: Usuario): void {
-    const novaSenha = prompt(`Informe a nova senha temporária para "${usuario.nome}":`);
+  abrirModalRedefinirSenha(usuario: Usuario): void {
+    this.erro = '';
+    this.sucesso = '';
+    this.usuarioSenha = usuario;
+    this.novaSenhaTemporaria = '';
+    this.confirmacaoNovaSenhaTemporaria = '';
+    this.exibindoModalSenha = true;
+  }
 
-    if (!novaSenha) {
+  cancelarRedefinicaoSenha(): void {
+    this.usuarioSenha = undefined;
+    this.novaSenhaTemporaria = '';
+    this.confirmacaoNovaSenhaTemporaria = '';
+    this.redefinindoSenha = false;
+    this.exibindoModalSenha = false;
+  }
+
+  confirmarRedefinicaoSenha(): void {
+    this.erro = '';
+    this.sucesso = '';
+
+    if (!this.usuarioSenha) {
+      this.erro = 'Usuário não identificado para redefinição de senha';
       return;
     }
 
-    if (novaSenha.length < 6) {
+    if (!this.novaSenhaTemporaria.trim()) {
+      this.erro = 'Informe a nova senha temporária';
+      return;
+    }
+
+    if (this.novaSenhaTemporaria.length < 6) {
       this.erro = 'A senha deve ter no mínimo 6 caracteres';
       return;
     }
 
-    this.erro = '';
-    this.sucesso = '';
+    if (this.novaSenhaTemporaria !== this.confirmacaoNovaSenhaTemporaria) {
+      this.erro = 'A confirmação da senha não confere';
+      return;
+    }
 
-    this.usuarioService.redefinirSenha(usuario.id, novaSenha).subscribe({
+    this.redefinindoSenha = true;
+
+    this.usuarioService.redefinirSenha(this.usuarioSenha.id, this.novaSenhaTemporaria).subscribe({
       next: () => {
         this.sucesso = 'Senha redefinida com sucesso. O usuário deverá trocar a senha no próximo login.';
+        this.cancelarRedefinicaoSenha();
         this.carregarUsuarios();
       },
       error: (erro) => {
+        this.redefinindoSenha = false;
         this.erro = erro?.error?.erro || erro?.error?.message || 'Erro ao executar operação';
       }
     });

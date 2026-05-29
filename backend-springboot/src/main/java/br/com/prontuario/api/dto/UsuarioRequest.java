@@ -19,6 +19,26 @@ public class UsuarioRequest {
 
     private Boolean ativo;
 
+    private String especialidade;
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
+    }
+
+    public String getCro() {
+        return cro;
+    }
+
+    public void setCro(String cro) {
+        this.cro = cro;
+    }
+
+    private String cro;
+
     public Boolean getAtivo() {
         return ativo;
     }
