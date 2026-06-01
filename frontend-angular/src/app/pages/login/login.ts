@@ -51,7 +51,7 @@ export class Login implements OnInit {
       next: (usuario) => {
         this.authService.salvarUsuario(usuario);
         this.carregando = false;
-        this.router.navigate(['/pacientes']);
+        this.router.navigate(['/inicio']);
       },
 
       error: (erro) => {

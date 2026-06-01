@@ -10,7 +10,7 @@ export class AnexoService {
 
   private readonly apiBase = 'http://localhost:8080/pacientes';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   listar(pacienteId: number): Observable<Anexo[]> {
     return this.http.get<Anexo[]>(
@@ -31,6 +31,15 @@ export class AnexoService {
 
   download(pacienteId: number, anexoId: number): string {
     return `${this.apiBase}/${pacienteId}/anexos/${anexoId}/download`;
+  }
+
+  abrir(pacienteId: number, anexoId: number): Observable<Blob> {
+    return this.http.get(
+      `${this.apiBase}/${pacienteId}/anexos/${anexoId}/download`,
+      {
+        responseType: 'blob'
+      }
+    );
   }
 
   excluir(pacienteId: number, anexoId: number): Observable<void> {

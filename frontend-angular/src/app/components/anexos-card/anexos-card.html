@@ -9,10 +9,7 @@
     <label class="upload-btn">
       {{ enviando ? 'Enviando...' : 'Adicionar anexo' }}
 
-      <input
-        type="file"
-        (change)="selecionarArquivo($event)"
-        [disabled]="enviando">
+      <input type="file" (change)="selecionarArquivo($event)" [disabled]="enviando">
     </label>
   </div>
 
@@ -28,36 +25,34 @@
 
     <article class="anexo" *ngFor="let anexo of anexos">
 
-      <div class="arquivo-info">
+      <button type="button" class="arquivo-info arquivo-clicavel" title="Abrir anexo" (click)="abrirAnexo(anexo)">
+
         <div class="arquivo-icone">
           📄
         </div>
 
-        <div>
-          <strong>{{ anexo.nomeArquivo }}</strong>
+        <div class="arquivo-texto">
+          <strong>
+            {{ abrindoAnexoId === anexo.id ? 'Abrindo...' : anexo.nomeOriginal }}
+          </strong>
 
           <span>
-            {{ formatarTamanho(anexo.tamanhoArquivo) }}
+            {{ formatarTamanho(anexo.tamanho) }}
             •
             {{ formatarData(anexo.dataUpload) }}
           </span>
         </div>
-      </div>
+
+      </button>
 
       <div class="acoes">
 
-        <button
-          type="button"
-          class="btn-download"
-          (click)="download(anexo)">
+        <button type="button" class="btn-download" (click)="download(anexo)">
 
           ⬇ Download
         </button>
 
-        <button
-          type="button"
-          class="btn-excluir"
-          (click)="excluir(anexo)">
+        <button type="button" class="btn-excluir" (click)="excluir(anexo)">
 
           🗑 Excluir
         </button>

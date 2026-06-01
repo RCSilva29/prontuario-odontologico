@@ -1,7 +1,8 @@
 export interface Anexo {
   id: number;
-  nomeArquivo: string;
-  tipoArquivo: string;
-  tamanhoArquivo: number;
+  pacienteId: number;
+  nomeOriginal: string;
+  tipoConteudo: string;
+  tamanho: number;
   dataUpload: string;
 }

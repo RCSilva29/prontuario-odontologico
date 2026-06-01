@@ -61,6 +61,30 @@
   align-items: center;
 }
 
+.arquivo-clicavel {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  flex: 1;
+  transition: all 0.2s ease;
+}
+
+.arquivo-clicavel:hover {
+  opacity: 0.85;
+}
+
+.arquivo-clicavel:hover strong {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.arquivo-texto {
+  display: flex;
+  flex-direction: column;
+}
+
 .arquivo-icone {
   width: 52px;
   height: 52px;
@@ -70,11 +94,13 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  flex-shrink: 0;
 }
 
 .arquivo-info strong {
   display: block;
   margin-bottom: 6px;
+  transition: all 0.2s ease;
 }
 
 .arquivo-info span {
@@ -85,6 +111,7 @@
 .acoes {
   display: flex;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .btn-download,
@@ -101,9 +128,17 @@
   color: #2563eb;
 }
 
+.btn-download:hover {
+  background: #dbeafe;
+}
+
 .btn-excluir {
   background: #fef2f2;
   color: #dc2626;
+}
+
+.btn-excluir:hover {
+  background: #fee2e2;
 }
 
 .vazio {

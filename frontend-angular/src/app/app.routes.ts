@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { Login } from './pages/login/login';
+import { Inicio } from './pages/inicio/inicio';
 import { Pacientes } from './pages/pacientes/pacientes';
 import { PacienteForm } from './pages/paciente-form/paciente-form';
 import { PacienteDetalhe } from './pages/paciente-detalhe/paciente-detalhe';
@@ -18,6 +19,11 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  {
+    path: 'inicio',
+    component: Inicio,
+    canActivate: [authGuard]
   },
   {
     path: 'pacientes',
