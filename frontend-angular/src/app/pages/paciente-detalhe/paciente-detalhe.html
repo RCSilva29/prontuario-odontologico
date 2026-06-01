@@ -63,12 +63,15 @@
             </div>
           </div>
 
-          <button
-            type="button"
-            class="btn-documento"
-            (click)="abrirAtestado()">
-            📄 Gerar Atestado
-          </button>
+          <div class="documentos-acoes">
+            <button type="button" class="btn-documento" (click)="abrirAtestado()">
+              📄 Gerar Atestado
+            </button>
+
+            <button type="button" class="btn-documento btn-receituario" (click)="abrirReceituario()">
+              💊 Gerar Receituário
+            </button>
+          </div>
         </div>
 
         <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
@@ -92,26 +95,42 @@
 
     <label>
       Texto do atestado *
-      <textarea
-        rows="8"
-        name="textoAtestado"
-        [(ngModel)]="textoAtestado">
+      <textarea rows="8" name="textoAtestado" [(ngModel)]="textoAtestado">
       </textarea>
     </label>
 
     <div class="acoes-form">
-      <button
-        type="button"
-        class="btn-primary"
-        [disabled]="gerandoAtestado"
-        (click)="gerarAtestado()">
+      <button type="button" class="btn-primary" [disabled]="gerandoAtestado" (click)="gerarAtestado()">
         {{ gerandoAtestado ? 'Gerando PDF...' : 'Gerar PDF' }}
       </button>
 
-      <button
-        type="button"
-        class="btn-secondary"
-        (click)="cancelarAtestado()">
+      <button type="button" class="btn-secondary" (click)="cancelarAtestado()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="exibindoReceituario" class="modal-fundo">
+  <div class="modal-card">
+    <h2>Gerar Receituário</h2>
+
+    <p class="modal-descricao">
+      Informe a prescrição e, se necessário, orientações adicionais para o paciente.
+    </p>
+
+    <label>
+      Prescrição *
+      <textarea rows="9" name="prescricaoReceituario" [(ngModel)]="prescricaoReceituario">
+      </textarea>
+    </label>
+
+    <div class="acoes-form">
+      <button type="button" class="btn-primary" [disabled]="gerandoReceituario" (click)="gerarReceituario()">
+        {{ gerandoReceituario ? 'Gerando PDF...' : 'Gerar PDF' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarReceituario()">
         Cancelar
       </button>
     </div>

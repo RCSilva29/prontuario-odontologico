@@ -37,6 +37,11 @@ export class PacienteDetalhe implements OnInit {
   textoAtestado = '';
   gerandoAtestado = false;
 
+  exibindoReceituario = false;
+  prescricaoReceituario = '';
+  orientacoesReceituario = '';
+  gerandoReceituario = false;
+
   constructor(
     private route: ActivatedRoute,
     private pacienteService: PacienteService,
@@ -98,18 +103,10 @@ export class PacienteDetalhe implements OnInit {
         next: (pdf) => {
           this.gerandoAtestado = false;
 
-          const blob = new Blob([pdf], { type: 'application/pdf' });
-          const url = window.URL.createObjectURL(blob);
-
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = this.nomeArquivoAtestado();
-
-          document.body.appendChild(link);
-          link.click();
-
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
+          this.salvarEAbrirPdf(
+            pdf,
+            this.nomeArquivoDocumento('atestado')
+          );
 
           this.cancelarAtestado();
         },
@@ -121,6 +118,98 @@ export class PacienteDetalhe implements OnInit {
             'Erro ao gerar atestado';
         }
       });
+  }
+
+  abrirReceituario(): void {
+    this.erro = '';
+    this.exibindoReceituario = true;
+    this.prescricaoReceituario =
+      '1. Medicamento / concentração\nTomar conforme orientação profissional.\n';
+    this.orientacoesReceituario = '';
+  }
+
+  cancelarReceituario(): void {
+    this.exibindoReceituario = false;
+    this.prescricaoReceituario = '';
+    this.orientacoesReceituario = '';
+    this.gerandoReceituario = false;
+  }
+
+  gerarReceituario(): void {
+    this.erro = '';
+
+    if (!this.paciente) {
+      this.erro = 'Paciente não identificado para gerar receituário';
+      return;
+    }
+
+    if (!this.prescricaoReceituario.trim()) {
+      this.erro = 'Informe a prescrição do receituário';
+      return;
+    }
+
+    this.gerandoReceituario = true;
+
+    this.documentoService
+      .gerarReceituario(
+        this.paciente.id,
+        this.prescricaoReceituario.trim(),
+        ''
+      )
+      .subscribe({
+        next: (pdf) => {
+          this.gerandoReceituario = false;
+
+          this.salvarEAbrirPdf(
+            pdf,
+            this.nomeArquivoDocumento('receituario')
+          );
+
+          this.cancelarReceituario();
+        },
+        error: (erro) => {
+          this.gerandoReceituario = false;
+          this.erro =
+            erro?.error?.erro ||
+            erro?.error?.message ||
+            'Erro ao gerar receituário';
+        }
+      });
+  }
+
+  private salvarEAbrirPdf(pdf: Blob, nomeArquivo: string): void {
+    const blob = new Blob([pdf], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeArquivo;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 3000);
+  }
+
+  private nomeArquivoDocumento(prefixo: 'atestado' | 'receituario'): string {
+    const nomePaciente = (this.paciente?.nome || 'paciente')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      .toLowerCase();
+
+    const hoje = new Date();
+
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+
+    return `${prefixo}_${nomePaciente}_${dia}_${mes}_${ano}.pdf`;
   }
 
   formatarCpf(cpf: string): string {
@@ -159,22 +248,5 @@ export class PacienteDetalhe implements OnInit {
     }
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  }
-
-  nomeArquivoAtestado(): string {
-    const nomePaciente = (this.paciente?.nome || 'paciente')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9]/g, '_')
-      .replace(/_+/g, '_')
-      .replace(/^_|_$/g, '');
-
-    const hoje = new Date();
-
-    const dia = String(hoje.getDate()).padStart(2, '0');
-    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-    const ano = hoje.getFullYear();
-
-    return `${nomePaciente}_${dia}_${mes}_${ano}.pdf`;
   }
 }

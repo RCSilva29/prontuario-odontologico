@@ -11,11 +11,37 @@ export class DocumentoService {
 
     constructor(private http: HttpClient) { }
 
-    gerarAtestado(pacienteId: number, texto: string): Observable<Blob> {
+    gerarAtestado(
+        pacienteId: number,
+        texto: string
+    ): Observable<Blob> {
+
         return this.http.post(
             `${this.apiUrl}/pacientes/${pacienteId}/atestado`,
-            { texto },
-            { responseType: 'blob' }
+            {
+                texto
+            },
+            {
+                responseType: 'blob'
+            }
+        );
+    }
+
+    gerarReceituario(
+        pacienteId: number,
+        prescricao: string,
+        orientacoes: string
+    ): Observable<Blob> {
+
+        return this.http.post(
+            `${this.apiUrl}/pacientes/${pacienteId}/receituario`,
+            {
+                prescricao,
+                orientacoes
+            },
+            {
+                responseType: 'blob'
+            }
         );
     }
 }

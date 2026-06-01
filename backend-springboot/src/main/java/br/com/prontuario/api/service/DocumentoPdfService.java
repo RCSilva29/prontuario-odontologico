@@ -1,6 +1,7 @@
 package br.com.prontuario.api.service;
 
 import br.com.prontuario.api.dto.AtestadoRequest;
+import br.com.prontuario.api.dto.ReceituarioRequest;
 import br.com.prontuario.api.entity.Paciente;
 import br.com.prontuario.api.entity.Usuario;
 import br.com.prontuario.api.repository.PacienteRepository;
@@ -33,22 +34,15 @@ public class DocumentoPdfService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public byte[] gerarAtestado(
-            Long pacienteId,
-            AtestadoRequest request,
-            String emailUsuarioLogado) {
-        Paciente paciente = pacienteRepository.findById(pacienteId)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+    public byte[] gerarAtestado(Long pacienteId, AtestadoRequest request, String emailUsuarioLogado) {
+        Paciente paciente = buscarPaciente(pacienteId);
+        Usuario dentista = buscarDentista(emailUsuarioLogado);
 
-        Usuario dentista = usuarioRepository.findByEmail(emailUsuarioLogado)
-                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
-
-        validarRequest(request);
+        validarAtestadoRequest(request);
         validarDadosDentista(dentista);
 
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-
             Document document = new Document(PageSize.A4, 0, 0, 0, 0);
             PdfWriter writer = PdfWriter.getInstance(document, output);
 
@@ -57,7 +51,7 @@ public class DocumentoPdfService {
             PdfContentByte canvas = writer.getDirectContent();
 
             desenharLayout(canvas);
-            escreverConteudo(canvas, paciente, request, dentista);
+            escreverConteudoAtestado(canvas, paciente, request, dentista);
 
             document.close();
 
@@ -66,6 +60,44 @@ public class DocumentoPdfService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao gerar atestado em PDF", e);
         }
+    }
+
+    public byte[] gerarReceituario(Long pacienteId, ReceituarioRequest request, String emailUsuarioLogado) {
+        Paciente paciente = buscarPaciente(pacienteId);
+        Usuario dentista = buscarDentista(emailUsuarioLogado);
+
+        validarReceituarioRequest(request);
+        validarDadosDentista(dentista);
+
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            Document document = new Document(PageSize.A4, 0, 0, 0, 0);
+            PdfWriter writer = PdfWriter.getInstance(document, output);
+
+            document.open();
+
+            PdfContentByte canvas = writer.getDirectContent();
+
+            desenharLayout(canvas);
+            escreverConteudoReceituario(canvas, paciente, request, dentista);
+
+            document.close();
+
+            return output.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar receituário em PDF", e);
+        }
+    }
+
+    private Paciente buscarPaciente(Long pacienteId) {
+        return pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+    }
+
+    private Usuario buscarDentista(String emailUsuarioLogado) {
+        return usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
     }
 
     private void desenharLayout(PdfContentByte canvas) {
@@ -114,11 +146,12 @@ public class DocumentoPdfService {
                 6f);
     }
 
-    private void escreverConteudo(
+    private void escreverConteudoAtestado(
             PdfContentByte canvas,
             Paciente paciente,
             AtestadoRequest request,
             Usuario dentista) {
+
         Font tituloCabecalho = new Font(Font.HELVETICA, 21, Font.BOLD, AZUL_ESCURO);
         Font subtitulo = new Font(Font.HELVETICA, 10, Font.NORMAL, CINZA_TEXTO);
         Font titulo = new Font(Font.HELVETICA, 24, Font.BOLD, AZUL_ESCURO);
@@ -129,18 +162,8 @@ public class DocumentoPdfService {
         Font assinaturaDados = new Font(Font.HELVETICA, 13, Font.NORMAL, Color.BLACK);
         Font rodape = new Font(Font.HELVETICA, 9, Font.NORMAL, AZUL_MEDIO);
 
-        escrever(canvas, "CONSULTÓRIO ODONTOLÓGICO", tituloCabecalho, 120, 765, Element.ALIGN_LEFT);
-        escrever(canvas, "Cuidando do seu sorriso com saúde e qualidade", subtitulo, 120, 745, Element.ALIGN_LEFT);
-
-        desenharIconeDente(canvas, 42, 780);
-
-        escrever(canvas, "ATESTADO", titulo, 297, 630, Element.ALIGN_CENTER);
-
-        canvas.setColorStroke(AZUL_CLARO);
-        canvas.setLineWidth(1f);
-        canvas.moveTo(90, 608);
-        canvas.lineTo(505, 608);
-        canvas.stroke();
+        escreverCabecalho(canvas, tituloCabecalho, subtitulo);
+        escreverTitulo(canvas, "ATESTADO", titulo);
 
         escrever(canvas, "DADOS DO PACIENTE", secao, 90, 555, Element.ALIGN_LEFT);
         escrever(canvas, "Nome: " + valor(paciente.getNome()), normal, 90, 525, Element.ALIGN_LEFT);
@@ -148,10 +171,70 @@ public class DocumentoPdfService {
 
         escreverTextoLongo(canvas, request.getTexto(), normal, 90, 430, 505, 330);
 
+        escreverData(canvas, normal, dataNegrito, 275);
+        escreverAssinatura(canvas, dentista, assinaturaNome, assinaturaDados);
+        escreverRodape(canvas, rodape);
+    }
+
+    private void escreverConteudoReceituario(
+            PdfContentByte canvas,
+            Paciente paciente,
+            ReceituarioRequest request,
+            Usuario dentista) {
+
+        Font tituloCabecalho = new Font(Font.HELVETICA, 21, Font.BOLD, AZUL_ESCURO);
+        Font subtitulo = new Font(Font.HELVETICA, 10, Font.NORMAL, CINZA_TEXTO);
+        Font titulo = new Font(Font.HELVETICA, 24, Font.BOLD, AZUL_ESCURO);
+        Font secao = new Font(Font.HELVETICA, 13, Font.BOLD, AZUL_ESCURO);
+        Font normal = new Font(Font.HELVETICA, 12, Font.NORMAL, Color.BLACK);
+        Font dataNegrito = new Font(Font.HELVETICA, 11, Font.BOLD, AZUL_ESCURO);
+        Font assinaturaNome = new Font(Font.HELVETICA, 14, Font.BOLD, AZUL_ESCURO);
+        Font assinaturaDados = new Font(Font.HELVETICA, 13, Font.NORMAL, Color.BLACK);
+        Font rodape = new Font(Font.HELVETICA, 9, Font.NORMAL, AZUL_MEDIO);
+
+        escreverCabecalho(canvas, tituloCabecalho, subtitulo);
+        escreverTitulo(canvas, "RECEITUÁRIO", titulo);
+
+        escrever(canvas, "DADOS DO PACIENTE", secao, 90, 555, Element.ALIGN_LEFT);
+        escrever(canvas, "Nome: " + valor(paciente.getNome()), normal, 90, 525, Element.ALIGN_LEFT);
+        escrever(canvas, "CPF: " + valor(paciente.getCpf()), normal, 90, 500, Element.ALIGN_LEFT);
+
+        escrever(canvas, "PRESCRIÇÃO", secao, 90, 455, Element.ALIGN_LEFT);
+        escreverTextoLongo(canvas, request.getPrescricao(), normal, 90, 430, 505, 305);
+
+        escreverData(canvas, normal, dataNegrito, 230);
+        escreverAssinatura(canvas, dentista, assinaturaNome, assinaturaDados);
+        escreverRodape(canvas, rodape);
+    }
+
+    private void escreverCabecalho(PdfContentByte canvas, Font tituloCabecalho, Font subtitulo) {
+        escrever(canvas, "CONSULTÓRIO ODONTOLÓGICO", tituloCabecalho, 120, 765, Element.ALIGN_LEFT);
+        escrever(canvas, "Cuidando do seu sorriso com saúde e qualidade", subtitulo, 120, 745, Element.ALIGN_LEFT);
+        desenharIconeDente(canvas, 42, 780);
+    }
+
+    private void escreverTitulo(PdfContentByte canvas, String texto, Font titulo) {
+        escrever(canvas, texto, titulo, 297, 630, Element.ALIGN_CENTER);
+
+        canvas.setColorStroke(AZUL_CLARO);
+        canvas.setLineWidth(1f);
+        canvas.moveTo(90, 608);
+        canvas.lineTo(505, 608);
+        canvas.stroke();
+    }
+
+    private void escreverData(PdfContentByte canvas, Font normal, Font dataNegrito, float y) {
         Phrase data = new Phrase();
         data.add(new Chunk("Data: ", normal));
         data.add(new Chunk(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), dataNegrito));
-        ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT, data, 505, 275, 0);
+        ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT, data, 505, y, 0);
+    }
+
+    private void escreverAssinatura(
+            PdfContentByte canvas,
+            Usuario dentista,
+            Font assinaturaNome,
+            Font assinaturaDados) {
 
         canvas.setColorStroke(Color.BLACK);
         canvas.setLineWidth(1f);
@@ -162,34 +245,18 @@ public class DocumentoPdfService {
         String especialidade = dentista.getEspecialidade();
         String cro = dentista.getCro();
 
-        escrever(
-                canvas,
-                dentista.getNome(),
-                assinaturaNome,
-                297,
-                155,
-                Element.ALIGN_CENTER);
+        escrever(canvas, dentista.getNome(), assinaturaNome, 297, 155, Element.ALIGN_CENTER);
 
         if (especialidade != null && !especialidade.isBlank()) {
-            escrever(
-                    canvas,
-                    especialidade,
-                    assinaturaDados,
-                    297,
-                    132,
-                    Element.ALIGN_CENTER);
+            escrever(canvas, especialidade, assinaturaDados, 297, 132, Element.ALIGN_CENTER);
         }
 
         if (cro != null && !cro.isBlank()) {
-            escrever(
-                    canvas,
-                    cro,
-                    assinaturaDados,
-                    297,
-                    110,
-                    Element.ALIGN_CENTER);
+            escrever(canvas, cro, assinaturaDados, 297, 110, Element.ALIGN_CENTER);
         }
+    }
 
+    private void escreverRodape(PdfContentByte canvas, Font rodape) {
         escrever(canvas, "Tel.: 21 0000-0000 | 21 99999-9999", rodape, 105, 58, Element.ALIGN_LEFT);
         escrever(canvas, "Rua Dr. Feliciano Sodré, nº 215, sala 204 - Centro, São Gonçalo/RJ", rodape, 105, 36,
                 Element.ALIGN_LEFT);
@@ -294,11 +361,11 @@ public class DocumentoPdfService {
         try {
             ct.go();
         } catch (DocumentException e) {
-            throw new RuntimeException("Erro ao escrever texto do atestado", e);
+            throw new RuntimeException("Erro ao escrever texto no documento", e);
         }
     }
 
-    private void validarRequest(AtestadoRequest request) {
+    private void validarAtestadoRequest(AtestadoRequest request) {
         if (request == null) {
             throw new RuntimeException("Dados do atestado são obrigatórios");
         }
@@ -312,13 +379,32 @@ public class DocumentoPdfService {
         }
     }
 
+    private void validarReceituarioRequest(ReceituarioRequest request) {
+        if (request == null) {
+            throw new RuntimeException("Dados do receituário são obrigatórios");
+        }
+
+        if (request.getPrescricao() == null || request.getPrescricao().trim().isEmpty()) {
+            throw new RuntimeException("Prescrição é obrigatória");
+        }
+
+        if (request.getPrescricao().length() > 1200) {
+            throw new RuntimeException("Prescrição muito longa. Limite máximo: 1200 caracteres.");
+        }
+
+        if (request.getOrientacoes() != null && request.getOrientacoes().length() > 500) {
+            throw new RuntimeException("Orientações muito longas. Limite máximo: 500 caracteres.");
+        }
+    }
+
     private void validarDadosDentista(Usuario dentista) {
         if (dentista.getNome() == null || dentista.getNome().isBlank()) {
             throw new RuntimeException("Nome do dentista é obrigatório");
         }
 
         if (!"DENTISTA".equals(dentista.getPerfil())) {
-            throw new RuntimeException("A emissão de atestado é permitida apenas para usuários com perfil DENTISTA");
+            throw new RuntimeException(
+                    "A emissão de documentos clínicos é permitida apenas para usuários com perfil DENTISTA");
         }
     }
 

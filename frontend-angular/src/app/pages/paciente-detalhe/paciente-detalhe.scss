@@ -90,9 +90,13 @@
   font-size: 14px;
 }
 
+.documentos-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .btn-documento {
-  width: auto;
-  min-width: 180px;
   border: none;
   border-radius: 8px;
   background: #2563eb;
@@ -101,14 +105,23 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-documento:hover {
   background: #1d4ed8;
 }
 
+.btn-receituario {
+  background: #0f766e;
+}
+
+.btn-receituario:hover {
+  background: #115e59;
+}
+
 /* =======================================
-   MODAL ATESTADO
+   MODAIS
 ======================================= */
 
 .modal-fundo {
@@ -145,6 +158,10 @@
   font-weight: 600;
 }
 
+.label-orientacoes {
+  margin-top: 18px;
+}
+
 .modal-card textarea {
   width: 100%;
   margin-top: 8px;
@@ -162,6 +179,10 @@
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.modal-card textarea[name="orientacoesReceituario"] {
+  min-height: 120px;
 }
 
 .acoes-form {
