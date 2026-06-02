@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Paciente } from '../models/paciente.model';
 
@@ -19,10 +19,16 @@ export class PacienteService {
 
   private readonly apiUrl = 'http://localhost:8080/pacientes';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  listar(): Observable<Paciente[]> {
-    return this.http.get<Paciente[]>(this.apiUrl);
+  listar(termo?: string): Observable<Paciente[]> {
+    let params = new HttpParams();
+
+    if (termo && termo.trim()) {
+      params = params.set('termo', termo.trim());
+    }
+
+    return this.http.get<Paciente[]>(this.apiUrl, { params });
   }
 
   cadastrar(paciente: PacienteRequest): Observable<Paciente> {

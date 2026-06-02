@@ -21,8 +21,13 @@ public class PacienteController {
     }
 
     @GetMapping
-    public List<PacienteResponse> listar(Authentication authentication) {
-        return service.listarAtivos(obterEmailUsuarioLogado(authentication))
+    public List<PacienteResponse> listar(
+            @RequestParam(required = false) String termo,
+            Authentication authentication) {
+
+        return service.listarAtivos(
+                termo,
+                obterEmailUsuarioLogado(authentication))
                 .stream()
                 .map(PacienteResponse::new)
                 .toList();

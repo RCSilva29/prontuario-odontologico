@@ -8,7 +8,23 @@
     </a>
   </div>
 
+  <div class="barra-pesquisa">
+    <label>
+      Pesquisar paciente
+      <input type="text" name="termoPesquisa" [(ngModel)]="termoPesquisa" (input)="pesquisarPacientes()"
+        placeholder="Digite nome ou CPF">
+    </label>
+
+    <button type="button" class="botao-limpar" *ngIf="termoPesquisa" (click)="limparPesquisa()">
+      Limpar
+    </button>
+  </div>
+
   <p *ngIf="carregando">Carregando pacientes...</p>
+
+  <p *ngIf="pesquisando && !carregando" class="pesquisando">
+    Pesquisando...
+  </p>
 
   <p *ngIf="erro" class="erro">{{ erro }}</p>
 
@@ -60,8 +76,12 @@
     </tbody>
   </table>
 
-  <p *ngIf="!carregando && pacientes.length === 0">
+  <p *ngIf="!carregando && pacientes.length === 0 && !termoPesquisa">
     Nenhum paciente cadastrado.
+  </p>
+
+  <p *ngIf="!carregando && pacientes.length === 0 && termoPesquisa" class="vazio-pesquisa">
+    Nenhum paciente encontrado para "{{ termoPesquisa }}".
   </p>
 
 </section>

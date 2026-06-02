@@ -18,13 +18,17 @@ export class Pacientes implements OnInit {
 
   pacientes: Paciente[] = [];
   carregando = false;
+  pesquisando = false;
   erro = '';
   sucesso = '';
+  termoPesquisa = '';
 
   pacienteAtestadoId?: number;
   textoAtestado = '';
   gerandoAtestado = false;
   exibindoAtestado = false;
+
+  private timeoutPesquisa?: ReturnType<typeof setTimeout>;
 
   constructor(
     private pacienteService: PacienteService,
@@ -39,16 +43,37 @@ export class Pacientes implements OnInit {
     this.carregando = true;
     this.erro = '';
 
-    this.pacienteService.listar().subscribe({
+    this.pacienteService.listar(this.termoPesquisa).subscribe({
       next: (dados) => {
         this.pacientes = dados;
         this.carregando = false;
+        this.pesquisando = false;
       },
       error: () => {
         this.erro = 'Erro ao carregar pacientes';
         this.carregando = false;
+        this.pesquisando = false;
       }
     });
+  }
+
+  pesquisarPacientes(): void {
+    this.erro = '';
+    this.sucesso = '';
+    this.pesquisando = true;
+
+    if (this.timeoutPesquisa) {
+      clearTimeout(this.timeoutPesquisa);
+    }
+
+    this.timeoutPesquisa = setTimeout(() => {
+      this.carregarPacientes();
+    }, 350);
+  }
+
+  limparPesquisa(): void {
+    this.termoPesquisa = '';
+    this.carregarPacientes();
   }
 
   formatarCpf(cpf: string): string {

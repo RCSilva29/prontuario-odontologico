@@ -22,15 +22,31 @@ public class PacienteService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public List<Paciente> listarAtivos(String emailUsuarioLogado) {
+    public List<Paciente> listarAtivos(String termo, String emailUsuarioLogado) {
         Usuario usuario = buscarUsuarioLogado(emailUsuarioLogado);
+        String filtro = normalizarTermo(termo);
 
         if (isAdmin(usuario)) {
-            return repository.findByAtivoTrue();
+            if (filtro.isBlank()) {
+                return repository.findByAtivoTrue();
+            }
+
+            return repository.findByAtivoTrueAndNomeContainingIgnoreCaseOrAtivoTrueAndCpfContainingIgnoreCase(
+                    filtro,
+                    filtro);
         }
 
         if (isDentista(usuario)) {
-            return repository.findByAtivoTrueAndDentistaId(usuario.getId());
+            if (filtro.isBlank()) {
+                return repository.findByAtivoTrueAndDentistaId(usuario.getId());
+            }
+
+            return repository
+                    .findByAtivoTrueAndDentistaIdAndNomeContainingIgnoreCaseOrAtivoTrueAndDentistaIdAndCpfContainingIgnoreCase(
+                            usuario.getId(),
+                            filtro,
+                            usuario.getId(),
+                            filtro);
         }
 
         throw new RuntimeException("Perfil de usuário não autorizado para listar pacientes");
@@ -93,6 +109,10 @@ public class PacienteService {
 
     private boolean isDentista(Usuario usuario) {
         return "DENTISTA".equals(usuario.getPerfil());
+    }
+
+    private String normalizarTermo(String termo) {
+        return termo == null ? "" : termo.trim();
     }
 
     private void preencherDados(Paciente paciente, PacienteRequest request) {
