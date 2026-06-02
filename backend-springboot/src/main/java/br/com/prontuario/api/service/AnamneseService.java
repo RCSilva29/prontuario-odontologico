@@ -19,14 +19,20 @@ public class AnamneseService {
         this.pacienteService = pacienteService;
     }
 
-    public Anamnese buscarPorPaciente(Long pacienteId) {
+    public Anamnese buscarPorPaciente(Long pacienteId, String emailUsuarioLogado) {
+        pacienteService.buscarPorId(pacienteId, emailUsuarioLogado);
+
         return repository.findByPacienteId(pacienteId)
                 .orElseThrow(() -> new RuntimeException("Anamnese não encontrada"));
     }
 
-    public Anamnese cadastrar(Long pacienteId, AnamneseRequest request) {
-
-        Paciente paciente = pacienteService.buscarPorId(pacienteId);
+    public Anamnese cadastrar(
+            Long pacienteId,
+            AnamneseRequest request,
+            String emailUsuarioLogado) {
+        Paciente paciente = pacienteService.buscarPorId(
+                pacienteId,
+                emailUsuarioLogado);
 
         Anamnese anamnese = new Anamnese();
         anamnese.setPaciente(paciente);
@@ -36,9 +42,13 @@ public class AnamneseService {
         return repository.save(anamnese);
     }
 
-    public Anamnese atualizar(Long pacienteId, AnamneseRequest request) {
-
-        Anamnese anamnese = buscarPorPaciente(pacienteId);
+    public Anamnese atualizar(
+            Long pacienteId,
+            AnamneseRequest request,
+            String emailUsuarioLogado) {
+        Anamnese anamnese = buscarPorPaciente(
+                pacienteId,
+                emailUsuarioLogado);
 
         preencherDados(anamnese, request);
 
@@ -46,7 +56,6 @@ public class AnamneseService {
     }
 
     private void preencherDados(Anamnese anamnese, AnamneseRequest request) {
-
         anamnese.setHipertensao(request.getHipertensao());
         anamnese.setDiabetes(request.getDiabetes());
         anamnese.setAlergias(request.getAlergias());

@@ -4,6 +4,7 @@ import br.com.prontuario.api.dto.AtendimentoRequest;
 import br.com.prontuario.api.dto.AtendimentoResponse;
 import br.com.prontuario.api.entity.Atendimento;
 import br.com.prontuario.api.service.AtendimentoService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +20,12 @@ public class AtendimentoController {
     }
 
     @GetMapping
-    public List<AtendimentoResponse> listar(@PathVariable Long pacienteId) {
-        return service.listarPorPaciente(pacienteId)
+    public List<AtendimentoResponse> listar(
+            @PathVariable Long pacienteId,
+            Authentication authentication) {
+        return service.listarPorPaciente(
+                pacienteId,
+                obterEmailUsuarioLogado(authentication))
                 .stream()
                 .map(AtendimentoResponse::new)
                 .toList();
@@ -29,18 +34,36 @@ public class AtendimentoController {
     @PostMapping
     public AtendimentoResponse cadastrar(
             @PathVariable Long pacienteId,
-            @RequestBody AtendimentoRequest request
-    ) {
-        Atendimento atendimento = service.cadastrar(pacienteId, request);
+            @RequestBody AtendimentoRequest request,
+            Authentication authentication) {
+        Atendimento atendimento = service.cadastrar(
+                pacienteId,
+                request,
+                obterEmailUsuarioLogado(authentication));
+
         return new AtendimentoResponse(atendimento);
     }
 
     @PutMapping("/{atendimentoId}")
     public AtendimentoResponse atualizar(
+            @PathVariable Long pacienteId,
             @PathVariable Long atendimentoId,
-            @RequestBody AtendimentoRequest request
-    ) {
-        Atendimento atendimento = service.atualizar(atendimentoId, request);
+            @RequestBody AtendimentoRequest request,
+            Authentication authentication) {
+        Atendimento atendimento = service.atualizar(
+                pacienteId,
+                atendimentoId,
+                request,
+                obterEmailUsuarioLogado(authentication));
+
         return new AtendimentoResponse(atendimento);
+    }
+
+    private String obterEmailUsuarioLogado(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("Usuário autenticado não identificado");
+        }
+
+        return authentication.getName();
     }
 }

@@ -16,6 +16,8 @@ public class PacienteResponse {
     private String observacoes;
     private Boolean ativo;
     private LocalDateTime dataCriacao;
+    private Long dentistaId;
+    private String dentistaNome;
 
     public PacienteResponse(Paciente paciente) {
         this.id = paciente.getId();
@@ -27,6 +29,11 @@ public class PacienteResponse {
         this.observacoes = paciente.getObservacoes();
         this.ativo = paciente.getAtivo();
         this.dataCriacao = paciente.getDataCriacao();
+
+        if (paciente.getDentista() != null) {
+            this.dentistaId = paciente.getDentista().getId();
+            this.dentistaNome = paciente.getDentista().getNome();
+        }
     }
 
     public Long getId() {
@@ -63,5 +70,13 @@ public class PacienteResponse {
 
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
+    }
+
+    public Long getDentistaId() {
+        return dentistaId;
+    }
+
+    public String getDentistaNome() {
+        return dentistaNome;
     }
 }

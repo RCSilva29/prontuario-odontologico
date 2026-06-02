@@ -23,18 +23,28 @@ public class AnexoService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    public AnexoService(AnexoRepository repository, PacienteService pacienteService) {
+    public AnexoService(
+            AnexoRepository repository,
+            PacienteService pacienteService) {
         this.repository = repository;
         this.pacienteService = pacienteService;
     }
 
-    public List<Anexo> listarPorPaciente(Long pacienteId) {
+    public List<Anexo> listarPorPaciente(
+            Long pacienteId,
+            String emailUsuarioLogado) {
+        pacienteService.buscarPorId(pacienteId, emailUsuarioLogado);
         return repository.findByPacienteIdOrderByDataUploadDesc(pacienteId);
     }
 
-    public Anexo salvar(Long pacienteId, MultipartFile arquivo) {
+    public Anexo salvar(
+            Long pacienteId,
+            MultipartFile arquivo,
+            String emailUsuarioLogado) {
         try {
-            Paciente paciente = pacienteService.buscarPorId(pacienteId);
+            Paciente paciente = pacienteService.buscarPorId(
+                    pacienteId,
+                    emailUsuarioLogado);
 
             validarArquivo(arquivo);
 
@@ -61,19 +71,43 @@ public class AnexoService {
         }
     }
 
-    public Anexo buscarPorId(Long id) {
-        return repository.findById(id)
+    public Anexo buscarPorId(
+            Long pacienteId,
+            Long anexoId,
+            String emailUsuarioLogado) {
+        pacienteService.buscarPorId(pacienteId, emailUsuarioLogado);
+
+        Anexo anexo = repository.findById(anexoId)
                 .orElseThrow(() -> new RuntimeException("Anexo não encontrado"));
+
+        if (anexo.getPaciente() == null || !pacienteId.equals(anexo.getPaciente().getId())) {
+            throw new RuntimeException("Anexo não pertence ao paciente informado");
+        }
+
+        return anexo;
     }
 
-    public Resource baixar(Long id) {
-        Anexo anexo = buscarPorId(id);
+    public Resource baixar(
+            Long pacienteId,
+            Long anexoId,
+            String emailUsuarioLogado) {
+        Anexo anexo = buscarPorId(
+                pacienteId,
+                anexoId,
+                emailUsuarioLogado);
+
         return new FileSystemResource(anexo.getCaminhoArquivo());
     }
 
-    public void excluir(Long id) {
+    public void excluir(
+            Long pacienteId,
+            Long anexoId,
+            String emailUsuarioLogado) {
         try {
-            Anexo anexo = buscarPorId(id);
+            Anexo anexo = buscarPorId(
+                    pacienteId,
+                    anexoId,
+                    emailUsuarioLogado);
 
             Path caminho = Path.of(anexo.getCaminhoArquivo());
             Files.deleteIfExists(caminho);

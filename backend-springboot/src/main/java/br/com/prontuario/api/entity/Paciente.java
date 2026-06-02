@@ -39,4 +39,8 @@ public class Paciente {
 
     @Column(nullable = false)
     private LocalDateTime dataCriacao = LocalDateTime.now();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dentista_id")
+    private Usuario dentista;
 }

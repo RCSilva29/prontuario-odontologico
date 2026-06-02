@@ -4,6 +4,7 @@ import br.com.prontuario.api.dto.AnamneseRequest;
 import br.com.prontuario.api.dto.AnamneseResponse;
 import br.com.prontuario.api.entity.Anamnese;
 import br.com.prontuario.api.service.AnamneseService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,9 +18,12 @@ public class AnamneseController {
     }
 
     @GetMapping
-    public AnamneseResponse buscar(@PathVariable Long pacienteId) {
-
-        Anamnese anamnese = service.buscarPorPaciente(pacienteId);
+    public AnamneseResponse buscar(
+            @PathVariable Long pacienteId,
+            Authentication authentication) {
+        Anamnese anamnese = service.buscarPorPaciente(
+                pacienteId,
+                obterEmailUsuarioLogado(authentication));
 
         return new AnamneseResponse(anamnese);
     }
@@ -27,9 +31,12 @@ public class AnamneseController {
     @PostMapping
     public AnamneseResponse cadastrar(
             @PathVariable Long pacienteId,
-            @RequestBody AnamneseRequest request) {
-
-        Anamnese anamnese = service.cadastrar(pacienteId, request);
+            @RequestBody AnamneseRequest request,
+            Authentication authentication) {
+        Anamnese anamnese = service.cadastrar(
+                pacienteId,
+                request,
+                obterEmailUsuarioLogado(authentication));
 
         return new AnamneseResponse(anamnese);
     }
@@ -37,10 +44,21 @@ public class AnamneseController {
     @PutMapping
     public AnamneseResponse atualizar(
             @PathVariable Long pacienteId,
-            @RequestBody AnamneseRequest request) {
-
-        Anamnese anamnese = service.atualizar(pacienteId, request);
+            @RequestBody AnamneseRequest request,
+            Authentication authentication) {
+        Anamnese anamnese = service.atualizar(
+                pacienteId,
+                request,
+                obterEmailUsuarioLogado(authentication));
 
         return new AnamneseResponse(anamnese);
+    }
+
+    private String obterEmailUsuarioLogado(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("Usuário autenticado não identificado");
+        }
+
+        return authentication.getName();
     }
 }

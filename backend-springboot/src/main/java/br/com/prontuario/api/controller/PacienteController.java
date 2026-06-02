@@ -5,6 +5,7 @@ import br.com.prontuario.api.dto.PacienteResponse;
 import br.com.prontuario.api.entity.Paciente;
 import br.com.prontuario.api.service.PacienteService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,33 +21,62 @@ public class PacienteController {
     }
 
     @GetMapping
-    public List<PacienteResponse> listar() {
-        return service.listarAtivos()
+    public List<PacienteResponse> listar(Authentication authentication) {
+        return service.listarAtivos(obterEmailUsuarioLogado(authentication))
                 .stream()
                 .map(PacienteResponse::new)
                 .toList();
     }
 
     @PostMapping
-    public PacienteResponse cadastrar(@Valid @RequestBody PacienteRequest request) {
-        Paciente paciente = service.cadastrar(request);
+    public PacienteResponse cadastrar(
+            @Valid @RequestBody PacienteRequest request,
+            Authentication authentication) {
+        Paciente paciente = service.cadastrar(
+                request,
+                obterEmailUsuarioLogado(authentication));
+
         return new PacienteResponse(paciente);
     }
 
     @GetMapping("/{id}")
-    public PacienteResponse buscarPorId(@PathVariable Long id) {
-        Paciente paciente = service.buscarPorId(id);
+    public PacienteResponse buscarPorId(
+            @PathVariable Long id,
+            Authentication authentication) {
+        Paciente paciente = service.buscarPorId(
+                id,
+                obterEmailUsuarioLogado(authentication));
+
         return new PacienteResponse(paciente);
     }
 
     @PutMapping("/{id}")
-    public PacienteResponse atualizar(@PathVariable Long id, @Valid @RequestBody PacienteRequest request) {
-        Paciente paciente = service.atualizar(id, request);
+    public PacienteResponse atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody PacienteRequest request,
+            Authentication authentication) {
+        Paciente paciente = service.atualizar(
+                id,
+                request,
+                obterEmailUsuarioLogado(authentication));
+
         return new PacienteResponse(paciente);
     }
 
     @DeleteMapping("/{id}")
-    public void excluir(@PathVariable Long id) {
-        service.excluir(id);
+    public void excluir(
+            @PathVariable Long id,
+            Authentication authentication) {
+        service.excluir(
+                id,
+                obterEmailUsuarioLogado(authentication));
+    }
+
+    private String obterEmailUsuarioLogado(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("Usuário autenticado não identificado");
+        }
+
+        return authentication.getName();
     }
 }

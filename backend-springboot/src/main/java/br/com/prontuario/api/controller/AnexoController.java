@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +24,12 @@ public class AnexoController {
     }
 
     @GetMapping
-    public List<AnexoResponse> listar(@PathVariable Long pacienteId) {
-        return service.listarPorPaciente(pacienteId)
+    public List<AnexoResponse> listar(
+            @PathVariable Long pacienteId,
+            Authentication authentication) {
+        return service.listarPorPaciente(
+                pacienteId,
+                obterEmailUsuarioLogado(authentication))
                 .stream()
                 .map(AnexoResponse::new)
                 .toList();
@@ -33,25 +38,55 @@ public class AnexoController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public AnexoResponse upload(
             @PathVariable Long pacienteId,
-            @RequestParam("arquivo") MultipartFile arquivo) {
-        Anexo anexo = service.salvar(pacienteId, arquivo);
+            @RequestParam("arquivo") MultipartFile arquivo,
+            Authentication authentication) {
+        Anexo anexo = service.salvar(
+                pacienteId,
+                arquivo,
+                obterEmailUsuarioLogado(authentication));
+
         return new AnexoResponse(anexo);
     }
 
     @GetMapping("/{anexoId}/download")
-    public ResponseEntity<Resource> download(@PathVariable Long anexoId) {
-        Anexo anexo = service.buscarPorId(anexoId);
-        Resource arquivo = service.baixar(anexoId);
+    public ResponseEntity<Resource> download(
+            @PathVariable Long pacienteId,
+            @PathVariable Long anexoId,
+            Authentication authentication) {
+        Anexo anexo = service.buscarPorId(
+                pacienteId,
+                anexoId,
+                obterEmailUsuarioLogado(authentication));
+
+        Resource arquivo = service.baixar(
+                pacienteId,
+                anexoId,
+                obterEmailUsuarioLogado(authentication));
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + anexo.getNomeOriginal() + "\"")
                 .contentType(MediaType.parseMediaType(anexo.getTipoConteudo()))
                 .body(arquivo);
     }
 
     @DeleteMapping("/{anexoId}")
-    public void excluir(@PathVariable Long anexoId) {
-        service.excluir(anexoId);
+    public void excluir(
+            @PathVariable Long pacienteId,
+            @PathVariable Long anexoId,
+            Authentication authentication) {
+        service.excluir(
+                pacienteId,
+                anexoId,
+                obterEmailUsuarioLogado(authentication));
+    }
+
+    private String obterEmailUsuarioLogado(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("Usuário autenticado não identificado");
+        }
+
+        return authentication.getName();
     }
 }
