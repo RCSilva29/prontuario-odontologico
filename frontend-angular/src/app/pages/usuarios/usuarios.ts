@@ -28,14 +28,18 @@ export class Usuarios implements OnInit {
   erro = '';
   sucesso = '';
   carregando = false;
+  pesquisando = false;
   salvando = false;
   exibindoFormulario = false;
+  termoPesquisa = '';
 
   usuarioSenha?: Usuario;
   novaSenhaTemporaria = '';
   confirmacaoNovaSenhaTemporaria = '';
   redefinindoSenha = false;
   exibindoModalSenha = false;
+
+  private timeoutPesquisa?: ReturnType<typeof setTimeout>;
 
   constructor(private usuarioService: UsuarioService) { }
 
@@ -47,16 +51,37 @@ export class Usuarios implements OnInit {
     this.carregando = true;
     this.erro = '';
 
-    this.usuarioService.listar().subscribe({
+    this.usuarioService.listar(this.termoPesquisa).subscribe({
       next: (dados) => {
         this.usuarios = dados;
         this.carregando = false;
+        this.pesquisando = false;
       },
       error: () => {
         this.erro = 'Erro ao carregar usuários';
         this.carregando = false;
+        this.pesquisando = false;
       }
     });
+  }
+
+  pesquisarUsuarios(): void {
+    this.erro = '';
+    this.sucesso = '';
+    this.pesquisando = true;
+
+    if (this.timeoutPesquisa) {
+      clearTimeout(this.timeoutPesquisa);
+    }
+
+    this.timeoutPesquisa = setTimeout(() => {
+      this.carregarUsuarios();
+    }, 350);
+  }
+
+  limparPesquisa(): void {
+    this.termoPesquisa = '';
+    this.carregarUsuarios();
   }
 
   novoUsuario(): void {

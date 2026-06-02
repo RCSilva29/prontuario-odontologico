@@ -11,6 +11,18 @@
     </button>
   </div>
 
+  <div class="barra-pesquisa" *ngIf="!exibindoFormulario">
+    <label>
+      Pesquisar usuário
+      <input type="text" name="termoPesquisa" [(ngModel)]="termoPesquisa" (input)="pesquisarUsuarios()"
+        placeholder="Digite nome ou e-mail">
+    </label>
+
+    <button type="button" class="botao-limpar" *ngIf="termoPesquisa" (click)="limparPesquisa()">
+      Limpar
+    </button>
+  </div>
+
   <p *ngIf="erro" class="erro">{{ erro }}</p>
   <p *ngIf="sucesso" class="sucesso">{{ sucesso }}</p>
 
@@ -73,6 +85,10 @@
   <div class="table-card">
     <p *ngIf="carregando">Carregando usuários...</p>
 
+    <p *ngIf="pesquisando && !carregando" class="pesquisando">
+      Pesquisando...
+    </p>
+
     <table *ngIf="!carregando && usuarios.length > 0">
       <thead>
         <tr>
@@ -134,8 +150,12 @@
       </tbody>
     </table>
 
-    <p *ngIf="!carregando && usuarios.length === 0">
+    <p *ngIf="!carregando && usuarios.length === 0 && !termoPesquisa">
       Nenhum usuário cadastrado.
+    </p>
+
+    <p *ngIf="!carregando && usuarios.length === 0 && termoPesquisa" class="vazio-pesquisa">
+      Nenhum usuário encontrado para "{{ termoPesquisa }}".
     </p>
   </div>
 

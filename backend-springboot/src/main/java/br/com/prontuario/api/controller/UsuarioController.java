@@ -1,14 +1,14 @@
 package br.com.prontuario.api.controller;
 
 import br.com.prontuario.api.dto.AlterarSenhaRequest;
+import br.com.prontuario.api.dto.RedefinirSenhaRequest;
 import br.com.prontuario.api.dto.UsuarioRequest;
 import br.com.prontuario.api.dto.UsuarioResponse;
 import br.com.prontuario.api.entity.Usuario;
 import br.com.prontuario.api.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
-import br.com.prontuario.api.dto.RedefinirSenhaRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,8 +23,9 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<UsuarioResponse> listar() {
-        return service.listarAtivos()
+    public List<UsuarioResponse> listar(
+            @RequestParam(required = false) String termo) {
+        return service.listar(termo)
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();

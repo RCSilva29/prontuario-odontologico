@@ -22,8 +22,16 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Usuario> listarAtivos() {
-        return repository.findAll();
+    public List<Usuario> listar(String termo) {
+        String filtro = normalizarTermo(termo);
+
+        if (filtro.isBlank()) {
+            return repository.findAll();
+        }
+
+        return repository.findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                filtro,
+                filtro);
     }
 
     public Usuario buscarPorId(Long id) {
@@ -187,6 +195,10 @@ public class UsuarioService {
         usuario.setAtivo(true);
 
         return repository.save(usuario);
+    }
+
+    private String normalizarTermo(String termo) {
+        return termo == null ? "" : termo.trim();
     }
 
     private void validarPerfil(String perfil) {

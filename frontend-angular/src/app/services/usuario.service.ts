@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Usuario, UsuarioRequest } from '../models/usuario.model';
 
@@ -12,8 +12,14 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) { }
 
-  listar(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.apiUrl);
+  listar(termo?: string): Observable<Usuario[]> {
+    let params = new HttpParams();
+
+    if (termo && termo.trim()) {
+      params = params.set('termo', termo.trim());
+    }
+
+    return this.http.get<Usuario[]>(this.apiUrl, { params });
   }
 
   cadastrar(request: UsuarioRequest): Observable<Usuario> {
@@ -36,17 +42,17 @@ export class UsuarioService {
     return this.http.put<void>(`${this.apiUrl}/${id}/senha`, request);
   }
 
-  desbloquear(id: number) {
+  desbloquear(id: number): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/${id}/desbloquear`, {});
   }
 
-  redefinirSenha(id: number, novaSenha: string) {
+  redefinirSenha(id: number, novaSenha: string): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/${id}/redefinir-senha`, {
       novaSenha
     });
   }
 
-  reativar(id: number) {
+  reativar(id: number): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/${id}/reativar`, {});
   }
 }
