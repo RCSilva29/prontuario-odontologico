@@ -224,3 +224,41 @@
 .btn-secondary:hover {
   background: #d1d5db;
 }
+
+/* =======================================
+   PRONTUÁRIO
+======================================= */
+
+.btn-prontuario {
+  background: #7c3aed;
+}
+
+.btn-prontuario:hover {
+  background: #6d28d9;
+}
+
+.opcoes-prontuario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.checkbox-opcao {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-opcao input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-opcao span {
+  color: #0f172a;
+  font-size: 15px;
+}

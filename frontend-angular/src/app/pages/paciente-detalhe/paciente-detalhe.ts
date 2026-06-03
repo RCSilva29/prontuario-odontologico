@@ -42,6 +42,15 @@ export class PacienteDetalhe implements OnInit {
   orientacoesReceituario = '';
   gerandoReceituario = false;
 
+  exibindoProntuario = false;
+  gerandoProntuario = false;
+
+  prontuarioOpcoes = {
+    incluirAnamnese: true,
+    incluirOdontograma: true,
+    incluirAtendimentos: true
+  };
+
   constructor(
     private route: ActivatedRoute,
     private pacienteService: PacienteService,
@@ -177,6 +186,70 @@ export class PacienteDetalhe implements OnInit {
       });
   }
 
+  abrirProntuario(): void {
+    this.erro = '';
+    this.exibindoProntuario = true;
+
+    this.prontuarioOpcoes = {
+      incluirAnamnese: true,
+      incluirOdontograma: true,
+      incluirAtendimentos: true
+    };
+  }
+
+  cancelarProntuario(): void {
+    this.exibindoProntuario = false;
+    this.gerandoProntuario = false;
+
+    this.prontuarioOpcoes = {
+      incluirAnamnese: true,
+      incluirOdontograma: true,
+      incluirAtendimentos: true
+    };
+  }
+
+  gerarProntuario(): void {
+    this.erro = '';
+
+    if (!this.paciente) {
+      this.erro = 'Paciente não identificado para gerar prontuário';
+      return;
+    }
+
+    if (
+      !this.prontuarioOpcoes.incluirAnamnese &&
+      !this.prontuarioOpcoes.incluirOdontograma &&
+      !this.prontuarioOpcoes.incluirAtendimentos
+    ) {
+      this.erro = 'Selecione ao menos uma opção para gerar o prontuário';
+      return;
+    }
+
+    this.gerandoProntuario = true;
+
+    this.documentoService
+      .gerarProntuario(this.paciente.id, this.prontuarioOpcoes)
+      .subscribe({
+        next: (pdf) => {
+          this.gerandoProntuario = false;
+
+          this.salvarEAbrirPdf(
+            pdf,
+            this.nomeArquivoProntuario()
+          );
+
+          this.cancelarProntuario();
+        },
+        error: (erro) => {
+          this.gerandoProntuario = false;
+          this.erro =
+            erro?.error?.erro ||
+            erro?.error?.message ||
+            'Erro ao gerar prontuário';
+        }
+      });
+  }
+
   private salvarEAbrirPdf(pdf: Blob, nomeArquivo: string): void {
     const blob = new Blob([pdf], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);
@@ -194,7 +267,7 @@ export class PacienteDetalhe implements OnInit {
     }, 3000);
   }
 
-  private nomeArquivoDocumento(prefixo: 'atestado' | 'receituario'): string {
+  private nomeArquivoDocumento(prefixo: 'atestado' | 'receituario' | 'prontuario'): string {
     const nomePaciente = (this.paciente?.nome || 'paciente')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -248,5 +321,49 @@ export class PacienteDetalhe implements OnInit {
     }
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  private nomeArquivoProntuario(): string {
+    const nomePaciente = (this.paciente?.nome || 'paciente')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      .toLowerCase();
+
+    const hoje = new Date();
+
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+
+    let tipo = 'Completo';
+
+    if (
+      this.prontuarioOpcoes.incluirAnamnese &&
+      !this.prontuarioOpcoes.incluirOdontograma &&
+      !this.prontuarioOpcoes.incluirAtendimentos
+    ) {
+      tipo = 'Anamnese';
+    }
+
+    if (
+      !this.prontuarioOpcoes.incluirAnamnese &&
+      this.prontuarioOpcoes.incluirOdontograma &&
+      !this.prontuarioOpcoes.incluirAtendimentos
+    ) {
+      tipo = 'Odontograma';
+    }
+
+    if (
+      !this.prontuarioOpcoes.incluirAnamnese &&
+      !this.prontuarioOpcoes.incluirOdontograma &&
+      this.prontuarioOpcoes.incluirAtendimentos
+    ) {
+      tipo = 'Atendimento';
+    }
+
+    return `Prontuario_${tipo}_${nomePaciente}_${dia}_${mes}_${ano}.pdf`;
   }
 }

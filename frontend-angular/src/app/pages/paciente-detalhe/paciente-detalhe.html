@@ -48,6 +48,7 @@
     </div>
 
     <div class="modulos">
+
       <div class="coluna-esquerda">
         <app-anamnese-card [pacienteId]="paciente.id"></app-anamnese-card>
         <app-odontograma-card [pacienteId]="paciente.id"></app-odontograma-card>
@@ -56,6 +57,7 @@
       <div class="coluna-direita">
 
         <div class="modulo documentos-clinicos">
+
           <div class="modulo-header">
             <div>
               <h2>Documentos clínicos</h2>
@@ -64,6 +66,7 @@
           </div>
 
           <div class="documentos-acoes">
+
             <button type="button" class="btn-documento" (click)="abrirAtestado()">
               📄 Gerar Atestado
             </button>
@@ -71,7 +74,13 @@
             <button type="button" class="btn-documento btn-receituario" (click)="abrirReceituario()">
               💊 Gerar Receituário
             </button>
+
+            <button type="button" class="btn-documento btn-prontuario" (click)="abrirProntuario()">
+              📚 Gerar Prontuário
+            </button>
+
           </div>
+
         </div>
 
         <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
@@ -79,14 +88,23 @@
         <div class="modulo">
           <app-anexos-card [pacienteId]="paciente.id"></app-anexos-card>
         </div>
+
       </div>
+
     </div>
 
   </div>
+
 </section>
 
+<!-- =========================================
+     MODAL ATESTADO
+========================================= -->
+
 <div *ngIf="exibindoAtestado" class="modal-fundo">
+
   <div class="modal-card">
+
     <h2>Gerar Atestado</h2>
 
     <p class="modal-descricao">
@@ -95,44 +113,126 @@
 
     <label>
       Texto do atestado *
+
       <textarea rows="8" name="textoAtestado" [(ngModel)]="textoAtestado">
       </textarea>
+
     </label>
 
     <div class="acoes-form">
+
       <button type="button" class="btn-primary" [disabled]="gerandoAtestado" (click)="gerarAtestado()">
+
         {{ gerandoAtestado ? 'Gerando PDF...' : 'Gerar PDF' }}
+
       </button>
 
       <button type="button" class="btn-secondary" (click)="cancelarAtestado()">
+
         Cancelar
+
       </button>
+
     </div>
+
   </div>
+
 </div>
 
+<!-- =========================================
+     MODAL RECEITUÁRIO
+========================================= -->
+
 <div *ngIf="exibindoReceituario" class="modal-fundo">
+
   <div class="modal-card">
+
     <h2>Gerar Receituário</h2>
 
     <p class="modal-descricao">
-      Informe a prescrição e, se necessário, orientações adicionais para o paciente.
+      Informe a prescrição para o paciente.
     </p>
 
     <label>
       Prescrição *
+
       <textarea rows="9" name="prescricaoReceituario" [(ngModel)]="prescricaoReceituario">
       </textarea>
+
     </label>
 
     <div class="acoes-form">
+
       <button type="button" class="btn-primary" [disabled]="gerandoReceituario" (click)="gerarReceituario()">
+
         {{ gerandoReceituario ? 'Gerando PDF...' : 'Gerar PDF' }}
+
       </button>
 
       <button type="button" class="btn-secondary" (click)="cancelarReceituario()">
+
         Cancelar
+
       </button>
+
     </div>
+
   </div>
+
+</div>
+
+<!-- =========================================
+     MODAL PRONTUÁRIO
+========================================= -->
+
+<div *ngIf="exibindoProntuario" class="modal-fundo">
+
+  <div class="modal-card">
+
+    <h2>Gerar Prontuário</h2>
+
+    <p class="modal-descricao">
+      Selecione o que deseja imprimir no prontuário odontológico.
+    </p>
+
+    <div class="opcoes-prontuario">
+
+      <label class="checkbox-opcao">
+        <input type="checkbox" [(ngModel)]="prontuarioOpcoes.incluirAnamnese">
+
+        <span>Anamnese</span>
+      </label>
+
+      <label class="checkbox-opcao">
+        <input type="checkbox" [(ngModel)]="prontuarioOpcoes.incluirOdontograma">
+
+        <span>Odontograma</span>
+      </label>
+
+      <label class="checkbox-opcao">
+        <input type="checkbox" [(ngModel)]="prontuarioOpcoes.incluirAtendimentos">
+
+        <span>Atendimentos</span>
+      </label>
+
+    </div>
+
+    <div class="acoes-form">
+
+      <button type="button" class="btn-primary" [disabled]="gerandoProntuario" (click)="gerarProntuario()">
+
+        {{ gerandoProntuario ? 'Gerando PDF...' : 'Gerar PDF' }}
+
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarProntuario()">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
