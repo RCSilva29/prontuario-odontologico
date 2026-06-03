@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
@@ -10,12 +10,50 @@ import { AuthService } from './services/auth.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit, OnDestroy {
+
+  private verificadorSessao?: ReturnType<typeof setInterval>;
+  private readonly eventosAtividade = [
+    'click',
+    'keydown',
+    'mousemove',
+    'scroll',
+    'touchstart'
+  ];
+
+  private readonly registrarAtividadeUsuario = () => {
+    if (this.authService.estaLogado()) {
+      this.authService.registrarAtividade();
+    }
+  };
 
   constructor(
     public router: Router,
     private authService: AuthService
   ) { }
+
+  ngOnInit(): void {
+    this.eventosAtividade.forEach((evento) => {
+      window.addEventListener(evento, this.registrarAtividadeUsuario, true);
+    });
+
+    this.verificadorSessao = setInterval(() => {
+      if (!this.isLoginPage() && !this.authService.sessaoValida()) {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    }, 60 * 1000);
+  }
+
+  ngOnDestroy(): void {
+    this.eventosAtividade.forEach((evento) => {
+      window.removeEventListener(evento, this.registrarAtividadeUsuario, true);
+    });
+
+    if (this.verificadorSessao) {
+      clearInterval(this.verificadorSessao);
+    }
+  }
 
   isLoginPage(): boolean {
     return this.router.url.startsWith('/login')

@@ -9,6 +9,9 @@ import { LoginRequest, LoginResponse } from '../models/login.model';
 export class AuthService {
 
   private readonly apiUrl = 'http://localhost:8080/auth/login';
+  private readonly chaveUsuario = 'usuarioLogado';
+  private readonly chaveUltimaAtividade = 'ultimaAtividade';
+  private readonly tempoMaximoInatividadeMs = 60 * 60 * 1000; // 1 hora
 
   constructor(private http: HttpClient) { }
 
@@ -17,16 +20,18 @@ export class AuthService {
   }
 
   salvarUsuario(usuario: LoginResponse): void {
-    localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+    sessionStorage.setItem(this.chaveUsuario, JSON.stringify(usuario));
+    this.registrarAtividade();
   }
 
   obterUsuario(): LoginResponse | null {
-    const dados = localStorage.getItem('usuarioLogado');
+    const dados = sessionStorage.getItem(this.chaveUsuario);
     return dados ? JSON.parse(dados) : null;
   }
 
   logout(): void {
-    localStorage.removeItem('usuarioLogado');
+    sessionStorage.removeItem(this.chaveUsuario);
+    sessionStorage.removeItem(this.chaveUltimaAtividade);
   }
 
   estaLogado(): boolean {
@@ -36,7 +41,7 @@ export class AuthService {
       return false;
     }
 
-    if (this.tokenExpirado()) {
+    if (this.tokenExpirado() || this.sessaoExpiradaPorInatividade()) {
       this.logout();
       return false;
     }
@@ -89,5 +94,35 @@ export class AuthService {
 
   sessaoValida(): boolean {
     return this.estaLogado() && !this.tokenExpirado();
+  }
+
+  registrarAtividade(): void {
+    if (!this.obterUsuario()) {
+      return;
+    }
+
+    sessionStorage.setItem(this.chaveUltimaAtividade, String(Date.now()));
+  }
+
+  sessaoExpiradaPorInatividade(): boolean {
+    const usuario = this.obterUsuario();
+
+    if (!usuario) {
+      return true;
+    }
+
+    const ultimaAtividade = sessionStorage.getItem(this.chaveUltimaAtividade);
+
+    if (!ultimaAtividade) {
+      return true;
+    }
+
+    const ultimaAtividadeMs = Number(ultimaAtividade);
+
+    if (Number.isNaN(ultimaAtividadeMs)) {
+      return true;
+    }
+
+    return Date.now() - ultimaAtividadeMs > this.tempoMaximoInatividadeMs;
   }
 }
