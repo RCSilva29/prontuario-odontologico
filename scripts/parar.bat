@@ -1,20 +1,7 @@
 @echo off
-cd /d %~dp0..
-title Prontuario Odontologico - Parar
+setlocal
+cd /d "%~dp0\.."
 
-echo ==========================================
-echo  Parando Prontuario Odontologico
-echo ==========================================
-echo.
-
-docker compose down
-
-if errorlevel 1 (
-    echo Erro ao parar o sistema.
-    pause
-    exit /b 1
-)
-
-echo.
-echo Sistema parado com sucesso.
-echo.
+docker compose stop
+msg * "Prontuario Odontologico encerrado."
+exit /b 0

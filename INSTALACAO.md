@@ -1,125 +1,68 @@
-# 🦷 Instalação do Prontuário Odontológico
+# Instalação do Prontuário Odontológico
 
-## Requisitos
+## Para instalar
 
-Antes de instalar o sistema, certifique-se de que o computador possui:
+1. Instale o Docker Desktop:
+   https://www.docker.com/products/docker-desktop/
 
-* Windows 10 ou Windows 11
-* Docker Desktop instalado
+2. Reinicie o computador.
 
----
+3. Abra o Docker Desktop e aguarde ele iniciar.
 
-## Instalação do Docker Desktop
-
-1. Acesse:
-
-https://www.docker.com/products/docker-desktop/
-
-2. Baixe e instale o Docker Desktop.
-
-3. Reinicie o computador após a instalação.
-
-4. Abra o Docker Desktop.
-
-5. Aguarde aparecer a mensagem:
-
-```text
-Engine running
-```
-
----
-
-## Instalação do Sistema
-
-1. Extraia a pasta do Prontuário Odontológico para o computador.
-
-Exemplo:
+4. Copie a pasta do sistema para:
 
 ```text
 C:\ProntuarioOdontologico
 ```
 
-2. Execute:
+5. Dê dois cliques em:
 
 ```text
-INSTALAR_PRONTUARIO
+INSTALAR_PRONTUARIO.bat
 ```
 
-3. Aguarde a conclusão da instalação.
+6. Aguarde a instalação terminar.
 
-Pronto.
+7. O sistema abrirá automaticamente no navegador.
 
----
+## Primeiro acesso
 
-## Utilização
+```text
+Email: admin@odonto.com
+Senha: 123456
+```
 
-### Abrir o sistema
+Após entrar, altere a senha.
+
+## Uso diário
+
+Na área de trabalho serão criados três atalhos com ícones próprios:
+
+```text
+Prontuario Odontologico
+Encerrar Prontuario
+Fazer Backup do Prontuario
+```
+
+## Backup
 
 Clique em:
 
 ```text
-🦷 Prontuário Odontológico
+Fazer Backup do Prontuario
 ```
 
-O navegador será aberto automaticamente.
-
----
-
-### Encerrar o sistema
-
-Ao terminar o uso, clique em:
+O backup será salvo na pasta:
 
 ```text
-Sair
+backups
 ```
 
-dentro do próprio sistema.
+## Observação importante
 
----
-
-### Encerrar completamente o Prontuário
-
-Somente quando desejar desligar o sistema ou realizar manutenção:
+Não apague as pastas:
 
 ```text
-🛑 Encerrar Prontuário
-```
-
----
-
-## Primeiro acesso
-
-Utilize:
-
-```text
-Email:
-admin@odonto.com
-
-Senha:
-123456
-```
-
-Após o primeiro acesso, altere a senha do administrador.
-
----
-
-## Backup
-
-Para gerar uma cópia de segurança:
-
-```text
-💾 Fazer Backup
-```
-
----
-
-## Em caso de problemas
-
-1. Verifique se o Docker Desktop está aberto.
-2. Reinicie o computador.
-3. Abra novamente o Docker Desktop.
-4. Execute novamente:
-
-```text
-🦷 Prontuário Odontológico
+anexos
+backups
 ```

@@ -1,34 +1,20 @@
 @echo off
-cd /d %~dp0..
-title Prontuario Odontologico - Iniciar
+setlocal
+cd /d "%~dp0\.."
 
-echo ==========================================
-echo  Iniciando Prontuario Odontologico
-echo ==========================================
-echo.
-
-echo Verificando Docker...
-docker --version >nul 2>&1
-
+where docker >nul 2>nul
 if errorlevel 1 (
-    echo Docker nao encontrado ou nao esta iniciado.
-    echo Abra o Docker Desktop e tente novamente.
-    pause
+    msg * "Docker Desktop nao encontrado. Instale ou abra o Docker Desktop."
     exit /b 1
 )
 
-echo Iniciando containers...
+docker info >nul 2>nul
+if errorlevel 1 (
+    msg * "Abra o Docker Desktop e aguarde iniciar antes de abrir o Prontuario."
+    exit /b 1
+)
+
 docker compose up -d
-
-if errorlevel 1 (
-    echo Erro ao iniciar o sistema.
-    pause
-    exit /b 1
-)
-
-echo.
-echo Sistema iniciado com sucesso.
-echo Abrindo no navegador...
-echo.
-
-start http://localhost:4200/login
+timeout /t 8 /nobreak >nul
+start "" "http://localhost:4200"
+exit /b 0

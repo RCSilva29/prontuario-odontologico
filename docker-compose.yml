@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16
     container_name: prontuario-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: prontuario_odonto
       POSTGRES_USER: prontuario_user
@@ -15,6 +16,7 @@ services:
     build:
       context: ./backend-springboot
     container_name: prontuario-backend
+    restart: unless-stopped
     depends_on:
       - postgres
     environment:
@@ -31,6 +33,7 @@ services:
     build:
       context: ./frontend-angular
     container_name: prontuario-frontend
+    restart: unless-stopped
     depends_on:
       - backend
     ports:
