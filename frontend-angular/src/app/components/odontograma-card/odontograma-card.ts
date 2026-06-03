@@ -44,7 +44,7 @@ export class OdontogramaCard implements OnInit {
     observacao: ''
   };
 
-  constructor(private odontogramaService: OdontogramaService) {}
+  constructor(private odontogramaService: OdontogramaService) { }
 
   ngOnInit(): void {
     this.carregarRegistros();
@@ -52,6 +52,7 @@ export class OdontogramaCard implements OnInit {
 
   carregarRegistros(): void {
     this.carregando = true;
+    this.erro = '';
 
     this.odontogramaService.listarPorPaciente(this.pacienteId).subscribe({
       next: (dados) => {
@@ -67,6 +68,12 @@ export class OdontogramaCard implements OnInit {
 
   selecionarDente(numeroDente: string): void {
     this.erro = '';
+
+    if (this.denteSelecionado === numeroDente) {
+      this.cancelarSelecao();
+      return;
+    }
+
     this.denteSelecionado = numeroDente;
 
     const registro = this.buscarRegistroPorDente(numeroDente);
@@ -102,6 +109,7 @@ export class OdontogramaCard implements OnInit {
     requisicao.subscribe({
       next: () => {
         this.salvando = false;
+        this.cancelarSelecao();
         this.carregarRegistros();
       },
       error: () => {
@@ -128,14 +136,25 @@ export class OdontogramaCard implements OnInit {
 
     this.odontogramaService.excluir(this.pacienteId, registroExistente.id).subscribe({
       next: () => {
-        this.form.status = '';
-        this.form.observacao = '';
+        this.cancelarSelecao();
         this.carregarRegistros();
       },
       error: () => {
         this.erro = 'Erro ao excluir registro';
       }
     });
+  }
+
+  cancelarSelecao(): void {
+    this.denteSelecionado = '';
+    this.erro = '';
+    this.salvando = false;
+
+    this.form = {
+      numeroDente: '',
+      status: '',
+      observacao: ''
+    };
   }
 
   buscarRegistroPorDente(numeroDente: string): Odontograma | undefined {

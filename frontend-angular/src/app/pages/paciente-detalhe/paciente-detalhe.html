@@ -52,12 +52,12 @@
       <div class="coluna-esquerda">
         <app-anamnese-card [pacienteId]="paciente.id"></app-anamnese-card>
         <app-odontograma-card [pacienteId]="paciente.id"></app-odontograma-card>
+        <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
       </div>
 
       <div class="coluna-direita">
 
         <div class="modulo documentos-clinicos">
-
           <div class="modulo-header">
             <div>
               <h2>Documentos clínicos</h2>
@@ -66,7 +66,6 @@
           </div>
 
           <div class="documentos-acoes">
-
             <button type="button" class="btn-documento" (click)="abrirAtestado()">
               📄 Gerar Atestado
             </button>
@@ -78,12 +77,8 @@
             <button type="button" class="btn-documento btn-prontuario" (click)="abrirProntuario()">
               📚 Gerar Prontuário
             </button>
-
           </div>
-
         </div>
-
-        <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
 
         <div class="modulo">
           <app-anexos-card [pacienteId]="paciente.id"></app-anexos-card>

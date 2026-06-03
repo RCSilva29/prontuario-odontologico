@@ -29,7 +29,7 @@ export class AtendimentosCard implements OnInit {
     observacoes: ''
   };
 
-  constructor(private atendimentoService: AtendimentoService) {}
+  constructor(private atendimentoService: AtendimentoService) { }
 
   ngOnInit(): void {
     this.carregarAtendimentos();
@@ -37,10 +37,17 @@ export class AtendimentosCard implements OnInit {
 
   carregarAtendimentos(): void {
     this.carregando = true;
+    this.erro = '';
 
     this.atendimentoService.listarPorPaciente(this.pacienteId).subscribe({
       next: (dados) => {
-        this.atendimentos = dados;
+        this.atendimentos = dados.sort((a, b) => {
+          const dataA = new Date(a.dataAtendimento || '').getTime();
+          const dataB = new Date(b.dataAtendimento || '').getTime();
+
+          return dataB - dataA;
+        });
+
         this.carregando = false;
       },
       error: () => {
@@ -51,8 +58,10 @@ export class AtendimentosCard implements OnInit {
   }
 
   novo(): void {
+    this.erro = '';
     this.editando = true;
     this.atendimentoEditando = undefined;
+
     this.form = {
       queixaPrincipal: '',
       evolucaoClinica: '',
@@ -62,6 +71,7 @@ export class AtendimentosCard implements OnInit {
   }
 
   editar(atendimento: Atendimento): void {
+    this.erro = '';
     this.editando = true;
     this.atendimentoEditando = atendimento;
 
@@ -95,6 +105,14 @@ export class AtendimentosCard implements OnInit {
   cancelar(): void {
     this.editando = false;
     this.atendimentoEditando = undefined;
+    this.erro = '';
+
+    this.form = {
+      queixaPrincipal: '',
+      evolucaoClinica: '',
+      procedimentoRealizado: '',
+      observacoes: ''
+    };
   }
 
   formatarDataHora(data: string): string {
@@ -108,6 +126,6 @@ export class AtendimentosCard implements OnInit {
       return data;
     }
 
-    return dataObj.toLocaleString('pt-BR');
+    return dataObj.toLocaleDateString('pt-BR');
   }
 }

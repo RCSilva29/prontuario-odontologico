@@ -16,14 +16,9 @@
       <div class="quadrante">
         <span class="quadrante-label">Superior esquerdo</span>
 
-        <button
-          type="button"
-          class="dente"
-          *ngFor="let dente of superioresEsquerdo"
-          [class.selecionado]="denteSelecionado === dente"
-          [class.com-registro]="possuiRegistro(dente)"
-          [ngClass]="classeStatus(dente)"
-          (click)="selecionarDente(dente)">
+        <button type="button" class="dente" *ngFor="let dente of superioresEsquerdo"
+          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
         </button>
@@ -34,14 +29,9 @@
       <div class="quadrante">
         <span class="quadrante-label">Superior direito</span>
 
-        <button
-          type="button"
-          class="dente"
-          *ngFor="let dente of superioresDireito"
-          [class.selecionado]="denteSelecionado === dente"
-          [class.com-registro]="possuiRegistro(dente)"
-          [ngClass]="classeStatus(dente)"
-          (click)="selecionarDente(dente)">
+        <button type="button" class="dente" *ngFor="let dente of superioresDireito"
+          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
         </button>
@@ -54,14 +44,9 @@
       <div class="quadrante">
         <span class="quadrante-label">Inferior esquerdo</span>
 
-        <button
-          type="button"
-          class="dente inferior"
-          *ngFor="let dente of inferioresEsquerdo"
-          [class.selecionado]="denteSelecionado === dente"
-          [class.com-registro]="possuiRegistro(dente)"
-          [ngClass]="classeStatus(dente)"
-          (click)="selecionarDente(dente)">
+        <button type="button" class="dente inferior" *ngFor="let dente of inferioresEsquerdo"
+          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
         </button>
@@ -72,14 +57,9 @@
       <div class="quadrante">
         <span class="quadrante-label">Inferior direito</span>
 
-        <button
-          type="button"
-          class="dente inferior"
-          *ngFor="let dente of inferioresDireito"
-          [class.selecionado]="denteSelecionado === dente"
-          [class.com-registro]="possuiRegistro(dente)"
-          [ngClass]="classeStatus(dente)"
-          (click)="selecionarDente(dente)">
+        <button type="button" class="dente inferior" *ngFor="let dente of inferioresDireito"
+          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
         </button>
@@ -102,10 +82,7 @@
 
     <label>
       Observações
-      <textarea
-        name="observacao"
-        [(ngModel)]="form.observacao"
-        placeholder="Informe observações sobre este dente">
+      <textarea name="observacao" [(ngModel)]="form.observacao" placeholder="Informe observações sobre este dente">
       </textarea>
     </label>
 
@@ -116,6 +93,10 @@
 
       <button type="button" class="btn-secondary" (click)="limparRegistro()">
         Limpar registro
+      </button>
+
+      <button type="button" class="btn-cancelar" (click)="cancelarSelecao()">
+        Cancelar
       </button>
     </div>
   </div>
