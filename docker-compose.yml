@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - prontuario_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prontuario_user -d prontuario_odonto"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build:
@@ -18,7 +23,8 @@ services:
     container_name: prontuario-backend
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/prontuario_odonto
       SPRING_DATASOURCE_USERNAME: prontuario_user
