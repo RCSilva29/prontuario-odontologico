@@ -2,12 +2,19 @@
   <div class="card-header">
     <div>
       <h2>Odontograma</h2>
-      <p>Selecione um dente para registrar status e observações</p>
+      <p>Selecione um ou mais dentes para registrar status e observações</p>
     </div>
   </div>
 
   <p *ngIf="carregando">Carregando odontograma...</p>
   <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+  <div class="acoes-selecao" *ngIf="!carregando">
+    <button type="button" class="btn-secondary" (click)="selecionarArcadaSuperior()">Selecionar superior</button>
+    <button type="button" class="btn-secondary" (click)="selecionarArcadaInferior()">Selecionar inferior</button>
+    <button type="button" class="btn-secondary" (click)="selecionarTodos()">Selecionar todos</button>
+    <button type="button" class="btn-cancelar" (click)="limparSelecao()">Limpar seleção</button>
+  </div>
 
   <div class="odontograma-visual" *ngIf="!carregando">
     <div class="arcada-label">Superior</div>
@@ -17,7 +24,7 @@
         <span class="quadrante-label">Superior esquerdo</span>
 
         <button type="button" class="dente" *ngFor="let dente of superioresEsquerdo"
-          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [class.selecionado]="denteEstaSelecionado(dente)" [class.com-registro]="possuiRegistro(dente)"
           [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
@@ -30,7 +37,7 @@
         <span class="quadrante-label">Superior direito</span>
 
         <button type="button" class="dente" *ngFor="let dente of superioresDireito"
-          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [class.selecionado]="denteEstaSelecionado(dente)" [class.com-registro]="possuiRegistro(dente)"
           [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
@@ -45,7 +52,7 @@
         <span class="quadrante-label">Inferior esquerdo</span>
 
         <button type="button" class="dente inferior" *ngFor="let dente of inferioresEsquerdo"
-          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [class.selecionado]="denteEstaSelecionado(dente)" [class.com-registro]="possuiRegistro(dente)"
           [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
@@ -58,7 +65,7 @@
         <span class="quadrante-label">Inferior direito</span>
 
         <button type="button" class="dente inferior" *ngFor="let dente of inferioresDireito"
-          [class.selecionado]="denteSelecionado === dente" [class.com-registro]="possuiRegistro(dente)"
+          [class.selecionado]="denteEstaSelecionado(dente)" [class.com-registro]="possuiRegistro(dente)"
           [ngClass]="classeStatus(dente)" (click)="selecionarDente(dente)">
           🦷
           <small>{{ dente }}</small>
@@ -67,8 +74,12 @@
     </div>
   </div>
 
-  <div class="painel-dente" *ngIf="denteSelecionado">
-    <h3>Dente {{ denteSelecionado }}</h3>
+  <div class="painel-dente" *ngIf="dentesSelecionados.length > 0">
+    <h3>{{ textoSelecao() }}</h3>
+
+    <p class="selecionados">
+      Selecionados: {{ dentesSelecionados.join(', ') }}
+    </p>
 
     <label>
       Status *
@@ -82,13 +93,18 @@
 
     <label>
       Observações
-      <textarea name="observacao" [(ngModel)]="form.observacao" placeholder="Informe observações sobre este dente">
+      <textarea name="observacao" [(ngModel)]="form.observacao"
+        placeholder="Informe observações para os dentes selecionados">
       </textarea>
     </label>
 
     <div class="acoes">
+      <button type="button" class="btn-orcamento" (click)="enviarDentesParaOrcamento()">
+        Adicionar ao orçamento
+      </button>
+
       <button type="button" class="btn-primary" (click)="salvar()" [disabled]="salvando">
-        {{ salvando ? 'Salvando...' : 'Salvar dente' }}
+        {{ salvando ? 'Salvando...' : 'Salvar seleção' }}
       </button>
 
       <button type="button" class="btn-secondary" (click)="limparRegistro()">
@@ -101,7 +117,7 @@
     </div>
   </div>
 
-  <p class="ajuda" *ngIf="!denteSelecionado">
-    Clique em um dente para editar o status e observações.
+  <p class="ajuda" *ngIf="dentesSelecionados.length === 0">
+    Clique em um ou mais dentes para editar o status e observações.
   </p>
 </section>

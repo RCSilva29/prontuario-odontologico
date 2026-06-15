@@ -363,3 +363,495 @@ app-odontograma-card {
 .coluna-direita {
   grid-template-columns: 1fr;
 }
+
+/* =======================================
+   ORÇAMENTOS
+======================================= */
+
+.orcamentos-card {
+  padding: 20px;
+}
+
+.orcamentos-card .modulo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ajuda-orcamento {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.lista-orcamentos {
+  display: grid;
+  gap: 12px;
+}
+
+.orcamento-resumo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f8fafc;
+}
+
+.orcamento-resumo strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.orcamento-resumo span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.orcamento-valores span {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.orcamento-acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-danger {
+  border: none;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-danger:hover {
+  background: #fecaca;
+}
+
+.modal-orcamento {
+  width: 1120px;
+  max-width: 96vw;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.orcamento-itens-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0 12px;
+}
+
+.orcamento-itens-header h3 {
+  margin: 0;
+}
+
+.orcamento-itens {
+  display: grid;
+  gap: 12px;
+}
+
+.orcamento-item {
+  display: grid;
+  grid-template-columns: 240px minmax(260px, 1fr) 105px 150px 120px 100px;
+  gap: 10px;
+  align-items: end;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.orcamento-form-grid {
+  display: grid;
+  grid-template-columns: 180px 180px;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.orcamento-parametros {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.orcamento-form-grid input,
+.orcamento-form-grid select,
+.orcamento-item input,
+.orcamento-item select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.campo-tipo select {
+  min-width: 0;
+}
+
+.campo-dentes input:disabled {
+  background: #f1f5f9;
+  color: #334155;
+  cursor: not-allowed;
+}
+
+.campo-qtd {
+  width: 105px;
+}
+
+.campo-valor {
+  width: 150px;
+}
+
+.campo-qtd input,
+.campo-valor input {
+  height: 38px;
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+
+.campo-qtd input {
+  width: 105px;
+  text-align: left;
+}
+
+.campo-valor input {
+  width: 150px;
+  text-align: left;
+}
+
+.campo-procedimento {
+  grid-column: 1 / -1;
+}
+
+.campo-procedimento input {
+  width: 100%;
+}
+
+.subtotal-item strong,
+.subtotal-item span {
+  display: block;
+}
+
+.subtotal-item strong {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.subtotal-item span {
+  color: #0f172a;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.btn-remover-item {
+  white-space: nowrap;
+}
+
+.observacoes-orcamento {
+  margin-top: 18px;
+}
+
+.observacoes-orcamento textarea {
+  min-height: 120px;
+}
+
+.resumo-orcamento {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.resumo-orcamento div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.resumo-orcamento .total {
+  border-top: 1px solid #bfdbfe;
+  padding-top: 10px;
+  font-size: 18px;
+}
+
+.resumo-orcamento strong {
+  color: #0f172a;
+}
+
+@media (max-width: 1100px) {
+  .orcamento-item {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .campo-procedimento {
+    grid-column: 1 / -1;
+  }
+
+  .subtotal-item,
+  .btn-remover-item {
+    grid-column: auto;
+  }
+
+  .orcamento-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+
+  .orcamentos-card .modulo-header,
+  .orcamento-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .orcamentos-card .modulo-header {
+    flex-direction: column;
+  }
+
+  .orcamento-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .orcamento-acoes {
+    flex-direction: column;
+  }
+
+  .orcamento-item {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-procedimento,
+  .subtotal-item,
+  .btn-remover-item {
+    grid-column: 1 / -1;
+  }
+}
+
+.campo-qtd,
+.campo-valor,
+.subtotal-item,
+.btn-remover-item {
+  align-self: end;
+}
+
+.subtotal-item {
+  min-width: 110px;
+}
+
+.subtotal-item strong,
+.subtotal-item span {
+  display: block;
+}
+
+.subtotal-item strong {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.subtotal-item span {
+  color: #0f172a;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.btn-remover-item {
+  width: 92px;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* =======================================
+   PAGAMENTOS DO ORÇAMENTO
+======================================= */
+
+.orcamento-valores {
+  display: grid;
+  gap: 4px;
+}
+
+.orcamento-valores span {
+  display: block;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.pagamentos-orcamento {
+  margin-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 18px;
+}
+
+.pagamentos-orcamento h3 {
+  margin: 0 0 12px;
+  color: #0f172a;
+}
+
+.resumo-pagamentos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.resumo-pagamentos div {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.resumo-pagamentos span,
+.resumo-pagamentos strong {
+  display: block;
+}
+
+.resumo-pagamentos span {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.resumo-pagamentos strong {
+  color: #0f172a;
+}
+
+.lista-pagamentos {
+  display: grid;
+  gap: 10px;
+}
+
+.pagamento-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.pagamento-item strong,
+.pagamento-item span {
+  display: block;
+}
+
+.pagamento-item span {
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.modal-pagamento {
+  width: 760px;
+}
+
+.pagamento-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.pagamento-form-grid input,
+.pagamento-form-grid select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+@media (max-width: 900px) {
+
+  .resumo-pagamentos,
+  .pagamento-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagamento-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
+/* =======================================
+   ALERTA DE VALIDAÇÃO DO ORÇAMENTO
+======================================= */
+
+.alerta-orcamento {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fca5a5 !important;
+  border-left: 6px solid #dc2626 !important;
+  color: #991b1b !important;
+  padding: 14px 18px !important;
+  margin: 12px 0 18px 0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12) !important;
+}
+
+.alerta-orcamento-icone {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+}
+
+.alerta-orcamento strong {
+  display: block !important;
+  color: #7f1d1d !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  margin-bottom: 2px !important;
+}
+
+.alerta-orcamento span {
+  display: block !important;
+  color: #991b1b !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+
+/* =======================================
+   DESTAQUE DE CAMPO OBRIGATÓRIO - ORÇAMENTO
+======================================= */
+
+.campo-com-erro {
+  border: 2px solid #dc2626 !important;
+  background: #fef2f2 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+.campo-com-erro:focus {
+  outline: none !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.22) !important;
+}

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 export interface ProntuarioPdfRequest {
     incluirAnamnese: boolean;
@@ -17,10 +16,7 @@ export class DocumentoService {
 
     constructor(private http: HttpClient) { }
 
-    gerarAtestado(
-        pacienteId: number,
-        texto: string
-    ): Observable<Blob> {
+    gerarAtestado(pacienteId: number, texto: string) {
         return this.http.post(
             `${this.apiUrl}/pacientes/${pacienteId}/atestado`,
             { texto },
@@ -28,11 +24,7 @@ export class DocumentoService {
         );
     }
 
-    gerarReceituario(
-        pacienteId: number,
-        prescricao: string,
-        orientacoes: string
-    ): Observable<Blob> {
+    gerarReceituario(pacienteId: number, prescricao: string, orientacoes: string) {
         return this.http.post(
             `${this.apiUrl}/pacientes/${pacienteId}/receituario`,
             { prescricao, orientacoes },
@@ -40,13 +32,17 @@ export class DocumentoService {
         );
     }
 
-    gerarProntuario(
-        pacienteId: number,
-        request: ProntuarioPdfRequest
-    ): Observable<Blob> {
+    gerarProntuario(pacienteId: number, request: ProntuarioPdfRequest) {
         return this.http.post(
             `${this.apiUrl}/pacientes/${pacienteId}/prontuario`,
             request,
+            { responseType: 'blob' }
+        );
+    }
+
+    gerarOrcamento(orcamentoId: number) {
+        return this.http.get(
+            `${this.apiUrl}/orcamentos/${orcamentoId}`,
             { responseType: 'blob' }
         );
     }

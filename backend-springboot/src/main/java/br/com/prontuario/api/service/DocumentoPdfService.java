@@ -6,11 +6,16 @@ import br.com.prontuario.api.dto.ReceituarioRequest;
 import br.com.prontuario.api.entity.Anamnese;
 import br.com.prontuario.api.entity.Atendimento;
 import br.com.prontuario.api.entity.Odontograma;
+import br.com.prontuario.api.entity.Orcamento;
+import br.com.prontuario.api.entity.OrcamentoItem;
+import br.com.prontuario.api.entity.OrcamentoPagamento;
 import br.com.prontuario.api.entity.Paciente;
 import br.com.prontuario.api.entity.Usuario;
 import br.com.prontuario.api.repository.AnamneseRepository;
 import br.com.prontuario.api.repository.AtendimentoRepository;
 import br.com.prontuario.api.repository.OdontogramaRepository;
+import br.com.prontuario.api.repository.OrcamentoPagamentoRepository;
+import br.com.prontuario.api.repository.OrcamentoRepository;
 import br.com.prontuario.api.repository.PacienteRepository;
 import br.com.prontuario.api.repository.UsuarioRepository;
 import com.lowagie.text.*;
@@ -19,9 +24,12 @@ import org.springframework.stereotype.Service;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class DocumentoPdfService {
@@ -38,6 +46,8 @@ public class DocumentoPdfService {
     private final AnamneseRepository anamneseRepository;
     private final OdontogramaRepository odontogramaRepository;
     private final AtendimentoRepository atendimentoRepository;
+    private final OrcamentoRepository orcamentoRepository;
+    private final OrcamentoPagamentoRepository orcamentoPagamentoRepository;
     private final PacienteService pacienteService;
 
     public DocumentoPdfService(
@@ -46,12 +56,16 @@ public class DocumentoPdfService {
             AnamneseRepository anamneseRepository,
             OdontogramaRepository odontogramaRepository,
             AtendimentoRepository atendimentoRepository,
+            OrcamentoRepository orcamentoRepository,
+            OrcamentoPagamentoRepository orcamentoPagamentoRepository,
             PacienteService pacienteService) {
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
         this.anamneseRepository = anamneseRepository;
         this.odontogramaRepository = odontogramaRepository;
         this.atendimentoRepository = atendimentoRepository;
+        this.orcamentoRepository = orcamentoRepository;
+        this.orcamentoPagamentoRepository = orcamentoPagamentoRepository;
         this.pacienteService = pacienteService;
     }
 
@@ -155,6 +169,49 @@ public class DocumentoPdfService {
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao gerar prontuário em PDF", e);
+        }
+    }
+
+    public byte[] gerarOrcamento(Long orcamentoId, String emailUsuarioLogado) {
+        Usuario dentista = buscarDentista(emailUsuarioLogado);
+        validarDadosDentista(dentista);
+
+        Orcamento orcamento = orcamentoRepository.findById(orcamentoId)
+                .orElseThrow(() -> new RuntimeException("Orçamento não encontrado"));
+
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+            Document document = new Document(PageSize.A4, 70, 70, 230, 120);
+            PdfWriter writer = PdfWriter.getInstance(document, output);
+            writer.setPageEvent(new DocumentoClinicoPageEvent("ORÇAMENTO ODONTOLÓGICO"));
+
+            document.open();
+
+            Font secao = new Font(Font.HELVETICA, 12, Font.BOLD, AZUL_ESCURO);
+            Font normal = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.BLACK);
+            Font normalNegrito = new Font(Font.HELVETICA, 10, Font.BOLD, Color.BLACK);
+
+            adicionarDadosOrcamentoPdf(document, orcamento, secao, normal, normalNegrito);
+            adicionarItensOrcamentoPdf(document, orcamento, normal, normalNegrito);
+            adicionarResumoOrcamentoPdf(document, orcamento, normal, normalNegrito);
+            adicionarObservacoesOrcamentoPdf(document, orcamento, secao, normal);
+
+            List<OrcamentoPagamento> pagamentos = orcamentoPagamentoRepository
+                    .findByOrcamentoIdOrderByDataPagamentoDesc(orcamento.getId());
+
+            if (!pagamentos.isEmpty()) {
+                adicionarPagamentosOrcamentoPdf(document, orcamento, normal, normalNegrito);
+            }
+
+            adicionarDataAssinaturaNoFinal(document, writer, dentista, normal, normalNegrito, normal);
+
+            document.close();
+
+            return output.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar orçamento em PDF", e);
         }
     }
 
@@ -631,9 +688,48 @@ public class DocumentoPdfService {
     }
 
     private void escreverRodape(PdfContentByte canvas, Font rodape) {
-        escrever(canvas, "Tel.: 21 0000-0000 | 21 99999-9999", rodape, 105, 58, Element.ALIGN_LEFT);
-        escrever(canvas, "Rua Dr. Feliciano Sodré, nº 215, sala 204 - Centro, São Gonçalo/RJ", rodape, 105, 36,
+
+        escrever(
+                canvas,
+                "21 99158-0796 | 21 96863-4089",
+                rodape,
+                105,
+                58,
                 Element.ALIGN_LEFT);
+
+        desenharIconeWhatsapp(canvas);
+
+        escrever(
+                canvas,
+                "(consultas com hora marcada)",
+                rodape,
+                265,
+                58,
+                Element.ALIGN_LEFT);
+
+        escrever(
+                canvas,
+                "Rua Dr. Feliciano Sodré, nº 215, sala 204 - Centro, São Gonçalo/RJ",
+                rodape,
+                105,
+                36,
+                Element.ALIGN_LEFT);
+    }
+
+    private void desenharIconeWhatsapp(PdfContentByte canvas) {
+
+        try {
+            Image whatsapp = Image.getInstance(
+                    getClass().getResource("/imagens/icone_whatsapp.png"));
+
+            whatsapp.scaleAbsolute(18f, 18f);
+            whatsapp.setAbsolutePosition(245f, 52f);
+
+            canvas.addImage(whatsapp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void desenharIconeDente(PdfContentByte canvas, float x, float y) {
@@ -1456,6 +1552,303 @@ public class DocumentoPdfService {
         return p;
     }
 
+    private void adicionarDadosOrcamentoPdf(
+            Document document,
+            Orcamento orcamento,
+            Font secao,
+            Font normal,
+            Font normalNegrito) throws DocumentException {
+
+        adicionarTituloSecao(document, "DADOS DO ORÇAMENTO", secao);
+
+        PdfPTable tabela = new PdfPTable(2);
+        tabela.setWidthPercentage(100);
+        tabela.setWidths(new float[] { 1f, 1f });
+        tabela.setSpacingAfter(14f);
+
+        adicionarCelulaRotuloValor(tabela, "Paciente:", valor(orcamento.getPaciente().getNome()), normalNegrito,
+                normal);
+        adicionarCelulaRotuloValor(tabela, "CPF:", valor(orcamento.getPaciente().getCpf()), normalNegrito, normal);
+        adicionarCelulaRotuloValor(tabela, "Dentista:", valor(orcamento.getUsuario().getNome()), normalNegrito, normal);
+        adicionarCelulaRotuloValor(tabela, "Data:", formatarDataOrcamento(orcamento.getDataCriacao()),
+                normalNegrito, normal);
+        adicionarCelulaRotuloValor(tabela, "Validade:", valorValidade(orcamento.getValidadeDias()), normalNegrito,
+                normal);
+        adicionarCelulaRotuloValor(tabela, "Status:", formatarStatusOrcamento(orcamento.getStatus()), normalNegrito,
+                normal);
+
+        document.add(tabela);
+    }
+
+    private void adicionarItensOrcamentoPdf(
+            Document document,
+            Orcamento orcamento,
+            Font normal,
+            Font normalNegrito) throws DocumentException {
+
+        adicionarTituloSecao(document, "ITENS DO ORÇAMENTO", normalNegrito);
+
+        Font tabelaFonte = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.BLACK);
+        Font tabelaFonteNegrito = new Font(Font.HELVETICA, 8, Font.BOLD, Color.BLACK);
+
+        PdfPTable tabela = new PdfPTable(5);
+        tabela.setWidthPercentage(100);
+        tabela.setWidths(new float[] { 2.4f, 4.2f, 0.6f, 1.9f, 1.9f });
+        tabela.setSpacingAfter(14f);
+
+        adicionarCabecalhoTabela(tabela, "Dente(s)", tabelaFonteNegrito);
+        adicionarCabecalhoTabela(tabela, "Procedimento", tabelaFonteNegrito);
+        adicionarCabecalhoTabelaCentralizada(tabela, "Qtd.", tabelaFonteNegrito);
+        adicionarCabecalhoTabela(tabela, "Valor Unit.", tabelaFonteNegrito);
+        adicionarCabecalhoTabela(tabela, "Subtotal", tabelaFonteNegrito);
+
+        if (orcamento.getItens() == null || orcamento.getItens().isEmpty()) {
+            PdfPCell cell = new PdfPCell(new Phrase("Nenhum item cadastrado.", tabelaFonte));
+            cell.setColspan(5);
+            cell.setPadding(8f);
+            tabela.addCell(cell);
+        } else {
+            for (OrcamentoItem item : orcamento.getItens()) {
+                adicionarCelulaTabelaSemQuebra(tabela, formatarDentesOrcamento(item.getDentes()), tabelaFonte);
+                adicionarCelulaTabela(tabela, valor(item.getProcedimento()), tabelaFonte);
+                adicionarCelulaTabelaCentralizadaSemQuebra(tabela,
+                        item.getQuantidade() == null ? "-" : item.getQuantidade().toString(), tabelaFonte);
+                adicionarCelulaTabelaDireitaSemQuebra(tabela, formatarMoeda(item.getValorUnitario()), tabelaFonte);
+                adicionarCelulaTabelaDireitaSemQuebra(tabela, formatarMoeda(item.getSubtotal()), tabelaFonte);
+            }
+        }
+
+        document.add(tabela);
+    }
+
+    private void adicionarResumoOrcamentoPdf(
+            Document document,
+            Orcamento orcamento,
+            Font normal,
+            Font normalNegrito) throws DocumentException {
+
+        PdfPTable tabela = new PdfPTable(2);
+        tabela.setWidthPercentage(45);
+        tabela.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        tabela.setWidths(new float[] { 1.3f, 1f });
+        tabela.setSpacingAfter(16f);
+
+        adicionarLinhaResumoOrcamento(tabela, "Subtotal:", formatarMoeda(orcamento.getSubtotal()), normal,
+                normalNegrito);
+        adicionarLinhaResumoOrcamento(tabela, "Desconto:", formatarMoeda(orcamento.getDesconto()), normal,
+                normalNegrito);
+        adicionarLinhaResumoOrcamento(tabela, "Total:", formatarMoeda(orcamento.getTotal()), normalNegrito,
+                normalNegrito);
+
+        document.add(tabela);
+    }
+
+    private void adicionarPagamentosOrcamentoPdf(
+            Document document,
+            Orcamento orcamento,
+            Font normal,
+            Font normalNegrito) throws DocumentException {
+
+        List<OrcamentoPagamento> pagamentos = orcamentoPagamentoRepository
+                .findByOrcamentoIdOrderByDataPagamentoDesc(orcamento.getId());
+
+        if (pagamentos.isEmpty()) {
+            return;
+        }
+
+        Font tituloSecao = new Font(Font.HELVETICA, 12, Font.BOLD, AZUL_ESCURO);
+        Font tabelaFonte = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.BLACK);
+        Font tabelaFonteNegrito = new Font(Font.HELVETICA, 8, Font.BOLD, Color.BLACK);
+
+        PdfPTable bloco = new PdfPTable(1);
+        bloco.setWidthPercentage(100);
+        bloco.setKeepTogether(true);
+        bloco.setSplitRows(false);
+        bloco.setSpacingBefore(14f);
+        bloco.setSpacingAfter(16f);
+
+        PdfPCell cellBloco = new PdfPCell();
+        cellBloco.setBorder(Rectangle.NO_BORDER);
+        cellBloco.setPadding(0f);
+
+        PdfPTable titulo = new PdfPTable(1);
+        titulo.setWidthPercentage(100);
+        titulo.setSpacingAfter(14f);
+
+        PdfPCell cellTitulo = new PdfPCell(new Phrase("PAGAMENTOS RECEBIDOS", tituloSecao));
+        cellTitulo.setBorder(Rectangle.LEFT);
+        cellTitulo.setBorderColor(AZUL_CLARO);
+        cellTitulo.setBorderWidthLeft(4f);
+        cellTitulo.setPaddingLeft(10f);
+        cellTitulo.setPaddingTop(6f);
+        cellTitulo.setPaddingBottom(6f);
+        cellTitulo.setBackgroundColor(new Color(248, 251, 253));
+        titulo.addCell(cellTitulo);
+
+        cellBloco.addElement(titulo);
+
+        PdfPTable tabela = new PdfPTable(4);
+        tabela.setWidthPercentage(100);
+        tabela.setWidths(new float[] { 1.35f, 1.35f, 2.7f, 1.3f });
+        tabela.setSpacingAfter(14f);
+        tabela.setKeepTogether(true);
+        tabela.setSplitRows(false);
+
+        adicionarCabecalhoTabelaSemQuebra(tabela, "Data", tabelaFonteNegrito);
+        adicionarCabecalhoTabelaSemQuebra(tabela, "Forma", tabelaFonteNegrito);
+        adicionarCabecalhoTabela(tabela, "Observação", tabelaFonteNegrito);
+        adicionarCabecalhoTabelaSemQuebra(tabela, "Valor", tabelaFonteNegrito);
+
+        for (OrcamentoPagamento pagamento : pagamentos) {
+            adicionarCelulaTabelaSemQuebra(tabela, formatarDataHoraOrcamento(pagamento.getDataPagamento()),
+                    tabelaFonte);
+            adicionarCelulaTabelaSemQuebra(tabela, formatarFormaPagamento(pagamento.getFormaPagamento()), tabelaFonte);
+            adicionarCelulaTabela(tabela, valor(pagamento.getObservacao()), tabelaFonte);
+            adicionarCelulaTabelaDireitaSemQuebra(tabela, formatarMoeda(pagamento.getValorPago()), tabelaFonte);
+        }
+
+        cellBloco.addElement(tabela);
+
+        PdfPTable resumo = new PdfPTable(2);
+        resumo.setWidthPercentage(45);
+        resumo.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        resumo.setWidths(new float[] { 1.3f, 1f });
+
+        adicionarLinhaResumoOrcamento(
+                resumo,
+                "Total pago:",
+                formatarMoeda(calcularTotalPagoOrcamento(orcamento)),
+                normal,
+                normalNegrito);
+
+        adicionarLinhaResumoOrcamento(
+                resumo,
+                "Saldo devedor:",
+                formatarMoeda(calcularSaldoDevedorOrcamento(orcamento)),
+                normalNegrito,
+                normalNegrito);
+
+        cellBloco.addElement(resumo);
+
+        bloco.addCell(cellBloco);
+
+        document.add(bloco);
+    }
+
+    private void adicionarObservacoesOrcamentoPdf(
+            Document document,
+            Orcamento orcamento,
+            Font secao,
+            Font normal) throws DocumentException {
+
+        adicionarTituloSecao(document, "OBSERVAÇÕES", secao);
+
+        Paragraph observacoes = new Paragraph(valor(orcamento.getObservacoes()), normal);
+        observacoes.setSpacingAfter(16f);
+        document.add(observacoes);
+    }
+
+    private void adicionarLinhaResumoOrcamento(
+            PdfPTable tabela,
+            String rotulo,
+            String valor,
+            Font fonteRotulo,
+            Font fonteValor) {
+
+        PdfPCell cellRotulo = new PdfPCell(new Phrase(rotulo, fonteRotulo));
+        cellRotulo.setBorder(Rectangle.NO_BORDER);
+        cellRotulo.setPadding(5f);
+        cellRotulo.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        tabela.addCell(cellRotulo);
+
+        PdfPCell cellValor = new PdfPCell(new Phrase(valor, fonteValor));
+        cellValor.setBorder(Rectangle.NO_BORDER);
+        cellValor.setPadding(5f);
+        cellValor.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        tabela.addCell(cellValor);
+    }
+
+    private void adicionarCelulaTabelaDireita(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(valor(texto), fonte));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(8f);
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        tabela.addCell(cell);
+    }
+
+    private void adicionarCelulaTabelaCentralizadaSemQuebra(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(valor(texto), fonte));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(7f);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setNoWrap(true);
+        tabela.addCell(cell);
+    }
+
+    private void adicionarCelulaTabelaCentralizada(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(valor(texto), fonte));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(8f);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        tabela.addCell(cell);
+    }
+
+    private String formatarMoeda(BigDecimal valor) {
+        return NumberFormat.getCurrencyInstance(new Locale("pt", "BR"))
+                .format(valor == null ? BigDecimal.ZERO : valor);
+    }
+
+    private BigDecimal calcularTotalPagoOrcamento(Orcamento orcamento) {
+        return orcamentoPagamentoRepository.findByOrcamentoIdOrderByDataPagamentoDesc(orcamento.getId())
+                .stream()
+                .map(OrcamentoPagamento::getValorPago)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal calcularSaldoDevedorOrcamento(Orcamento orcamento) {
+        BigDecimal saldo = (orcamento.getTotal() == null ? BigDecimal.ZERO : orcamento.getTotal())
+                .subtract(calcularTotalPagoOrcamento(orcamento));
+
+        return saldo.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : saldo;
+    }
+
+    private String formatarDataHoraOrcamento(java.time.LocalDateTime data) {
+        if (data == null) {
+            return "-";
+        }
+
+        return data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    }
+
+    private String valorValidade(Integer validadeDias) {
+        if (validadeDias == null) {
+            return "-";
+        }
+
+        return validadeDias + " dias";
+    }
+
+    private String formatarStatusOrcamento(String status) {
+        if (status == null || status.isBlank()) {
+            return "-";
+        }
+
+        return status.replace("_", " ");
+    }
+
+    private String formatarDentesOrcamento(String dentes) {
+        if (dentes == null || dentes.isBlank()) {
+            return "-";
+        }
+
+        return switch (dentes) {
+            case "PROTESE_TOTAL_SUPERIOR" -> "Prótese Total Superior";
+            case "PROTESE_TOTAL_INFERIOR" -> "Prótese Total Inferior";
+            case "PROTESE_TOTAL_COMPLETA" -> "Prótese Total Completa";
+            default -> dentes;
+        };
+    }
+
     private void validarAtestadoRequest(AtestadoRequest request) {
         if (request == null) {
             throw new RuntimeException("Dados do atestado são obrigatórios");
@@ -1501,9 +1894,9 @@ public class DocumentoPdfService {
             throw new RuntimeException("Nome do dentista é obrigatório");
         }
 
-        if (!"DENTISTA".equals(dentista.getPerfil())) {
+        if (!"DENTISTA".equals(dentista.getPerfil()) && !"ADMIN".equals(dentista.getPerfil())) {
             throw new RuntimeException(
-                    "A emissão de documentos clínicos é permitida apenas para usuários com perfil DENTISTA");
+                    "A emissão de documentos clínicos não é permitida para o seu perfil de usuário!");
         }
     }
 
@@ -1513,5 +1906,69 @@ public class DocumentoPdfService {
 
     private String valor(String valor) {
         return valor == null || valor.isBlank() ? "-" : valor;
+    }
+
+    private String formatarFormaPagamento(String forma) {
+        if (forma == null || forma.isBlank()) {
+            return "-";
+        }
+
+        return switch (forma) {
+            case "PIX" -> "PIX";
+            case "DINHEIRO" -> "Dinheiro";
+            case "CARTAO_CREDITO" -> "Cartão crédito";
+            case "CARTAO_DEBITO" -> "Cartão débito";
+            case "TRANSFERENCIA" -> "Transferência";
+            case "OUTRO" -> "Outro";
+            default -> forma;
+        };
+    }
+
+    private void adicionarCabecalhoTabelaCentralizada(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(texto, fonte));
+        cell.setBackgroundColor(new Color(241, 245, 249));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(7f);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setNoWrap(true);
+        tabela.addCell(cell);
+    }
+
+    private String formatarDataOrcamento(java.time.LocalDateTime data) {
+        if (data == null) {
+            return "-";
+        }
+
+        return data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    private void adicionarCabecalhoTabelaSemQuebra(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(texto, fonte));
+        cell.setBackgroundColor(new Color(241, 245, 249));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(7f);
+        cell.setNoWrap(true);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        tabela.addCell(cell);
+    }
+
+    private void adicionarCelulaTabelaSemQuebra(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(valor(texto), fonte));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(7f);
+        cell.setNoWrap(true);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        tabela.addCell(cell);
+    }
+
+    private void adicionarCelulaTabelaDireitaSemQuebra(PdfPTable tabela, String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Phrase(valor(texto), fonte));
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(7f);
+        cell.setNoWrap(true);
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        tabela.addCell(cell);
     }
 }

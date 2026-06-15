@@ -51,11 +51,64 @@
 
       <div class="coluna-esquerda">
         <app-anamnese-card [pacienteId]="paciente.id"></app-anamnese-card>
-        <app-odontograma-card [pacienteId]="paciente.id"></app-odontograma-card>
+        <app-odontograma-card [pacienteId]="paciente.id" (adicionarAoOrcamento)="abrirOrcamentoComDentes($event)">
+        </app-odontograma-card>
         <app-atendimentos-card [pacienteId]="paciente.id"></app-atendimentos-card>
       </div>
 
       <div class="coluna-direita">
+
+        <div class="modulo orcamentos-card">
+          <div class="modulo-header">
+            <div>
+              <h2>Orçamentos</h2>
+              <p>Controle simples de tratamentos e valores</p>
+            </div>
+
+            <button type="button" class="btn-primary" (click)="abrirNovoOrcamento()">
+              + Orçamento
+            </button>
+          </div>
+
+          <p *ngIf="carregandoOrcamentos">Carregando orçamentos...</p>
+
+          <p *ngIf="!carregandoOrcamentos && orcamentos.length === 0" class="ajuda-orcamento">
+            Nenhum orçamento cadastrado para este paciente.
+          </p>
+
+          <div class="lista-orcamentos" *ngIf="orcamentos.length > 0">
+            <div class="orcamento-resumo" *ngFor="let orcamento of orcamentos">
+              <div>
+                <strong>Orçamento #{{ orcamento.id }}</strong>
+                <span>{{ formatarDataHora(orcamento.dataCriacao) }} • {{ orcamento.status }}</span>
+              </div>
+
+              <div class="orcamento-valores">
+                <span>Total: {{ formatarMoeda(orcamento.total) }}</span>
+                <span>Pago: {{ formatarMoeda(orcamento.totalPago) }}</span>
+                <span>Saldo: {{ formatarMoeda(orcamento.saldoDevedor) }}</span>
+              </div>
+
+              <div class="orcamento-acoes">
+                <button type="button" class="btn-secondary" (click)="gerarOrcamentoPdf(orcamento.id)">
+                  Gerar Orçamento PDF
+                </button>
+
+                <button type="button" class="btn-primary" (click)="abrirPagamento(orcamento)">
+                  Pagamento
+                </button>
+
+                <button type="button" class="btn-secondary" (click)="editarOrcamento(orcamento)">
+                  Editar
+                </button>
+
+                <button type="button" class="btn-danger" (click)="excluirOrcamento(orcamento)">
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="modulo documentos-clinicos">
           <div class="modulo-header">
@@ -226,6 +279,235 @@
 
       </button>
 
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MODAL ORÇAMENTO
+========================================= -->
+
+<div *ngIf="exibindoOrcamento" class="modal-fundo">
+
+  <div class="modal-card modal-orcamento">
+
+    <h2>{{ orcamentoEditando ? 'Editar Orçamento' : 'Orçamento' }}</h2>
+
+    <p class="modal-descricao">
+      Informe os procedimentos, dentes e valores do tratamento.
+    </p>
+
+    <div *ngIf="erroOrcamento" class="alerta-orcamento" role="alert">
+      <span class="alerta-orcamento-icone">⚠</span>
+      <div>
+        <strong>Atenção</strong>
+        <span>{{ erroOrcamento }}</span>
+      </div>
+    </div>
+
+    <div class="orcamento-itens-header">
+      <h3>Itens do orçamento</h3>
+
+      <button type="button" class="btn-secondary" (click)="adicionarItemOrcamento()">
+        + Adicionar item
+      </button>
+    </div>
+
+    <div class="orcamento-itens">
+
+      <div class="orcamento-item" *ngFor="let item of orcamentoForm.itens; let i = index">
+
+        <label class="campo-tipo">
+          Tipo
+          <select name="tipoDente{{ i }}" [(ngModel)]="item.tipoDente"
+            (ngModelChange)="aplicarTipoDenteOrcamento(item)">
+            <option value="DENTES_ESPECIFICOS">Dentes específicos</option>
+            <option value="PROTESE_TOTAL_SUPERIOR">Prótese Total Superior</option>
+            <option value="PROTESE_TOTAL_INFERIOR">Prótese Total Inferior</option>
+            <option value="PROTESE_TOTAL_COMPLETA">Prótese Total Completa</option>
+          </select>
+        </label>
+
+        <label class="campo-dentes">
+          Dente(s)
+          <input type="text" [(ngModel)]="item.dentes" name="dentes{{ i }}" placeholder="Ex.: 14,15,16"
+            [disabled]="item.tipoDente !== 'DENTES_ESPECIFICOS'">
+        </label>
+
+        <label class="campo-qtd">
+          Qtd.
+          <input type="number" min="1" [(ngModel)]="item.quantidade" name="quantidade{{ i }}"
+            [class.campo-com-erro]="campoErroOrcamento === 'quantidade' + i">
+        </label>
+
+        <label class="campo-valor">
+          Valor unitário
+          <input type="number" min="0" step="0.01" [(ngModel)]="item.valorUnitario" name="valorUnitario{{ i }}"
+            [class.campo-com-erro]="campoErroOrcamento === 'valorUnitario' + i">
+        </label>
+
+        <div class="subtotal-item">
+          <strong>Subtotal</strong>
+          <span>{{ formatarMoeda(subtotalItem(item)) }}</span>
+        </div>
+
+        <button type="button" class="btn-danger btn-remover-item" (click)="removerItemOrcamento(i)">
+          Remover
+        </button>
+
+        <label class="campo-procedimento">
+          Procedimento *
+          <input type="text" [(ngModel)]="item.procedimento" name="procedimento{{ i }}"
+            [class.campo-com-erro]="campoErroOrcamento === 'procedimento' + i"
+            placeholder="Ex.: Restauração em Resina, Exodontia, Prótese Total">
+        </label>
+
+      </div>
+
+    </div>
+
+    <div class="orcamento-form-grid orcamento-parametros">
+      <label>
+        Validade em dias
+        <input type="number" min="1" [(ngModel)]="orcamentoForm.validadeDias" name="validadeDias">
+      </label>
+
+      <label>
+        Desconto
+        <input type="number" min="0" step="0.01" [(ngModel)]="orcamentoForm.desconto" name="desconto">
+      </label>
+    </div>
+
+    <label class="observacoes-orcamento">
+      Observações
+      <textarea rows="4" [(ngModel)]="orcamentoForm.observacoes" name="observacoesOrcamento"></textarea>
+    </label>
+
+    <div class="resumo-orcamento">
+      <div>
+        <span>Subtotal</span>
+        <strong>{{ formatarMoeda(subtotalOrcamentoAtual()) }}</strong>
+      </div>
+
+      <div>
+        <span>Desconto</span>
+        <strong>{{ formatarMoeda(orcamentoForm.desconto) }}</strong>
+      </div>
+
+      <div class="total">
+        <span>Total</span>
+        <strong>{{ formatarMoeda(totalOrcamentoAtual()) }}</strong>
+      </div>
+    </div>
+
+    <div class="pagamentos-orcamento" *ngIf="orcamentoEditando">
+      <h3>Pagamentos Recebidos</h3>
+
+      <p *ngIf="!orcamentoEditando.pagamentos || orcamentoEditando.pagamentos.length === 0" class="ajuda-orcamento">
+        Nenhum pagamento registrado para este orçamento.
+      </p>
+
+      <div class="lista-pagamentos" *ngIf="orcamentoEditando.pagamentos && orcamentoEditando.pagamentos.length > 0">
+        <div class="pagamento-item" *ngFor="let pagamento of orcamentoEditando.pagamentos">
+          <div>
+            <strong>{{ formatarMoeda(pagamento.valorPago) }}</strong>
+            <span>{{ formatarDataHora(pagamento.dataPagamento || '') }} • {{ pagamento.formaPagamento || '-' }}</span>
+          </div>
+
+          <button type="button" class="btn-danger" (click)="excluirPagamento(orcamentoEditando, pagamento.id)">
+            Excluir
+          </button>
+        </div>
+      </div>
+
+      <div class="resumo-pagamentos">
+        <div>
+          <span>Total pago</span>
+          <strong>{{ formatarMoeda(orcamentoEditando.totalPago) }}</strong>
+        </div>
+
+        <div>
+          <span>Saldo devedor</span>
+          <strong>{{ formatarMoeda(orcamentoEditando.saldoDevedor) }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ formatarStatusOrcamento(orcamentoEditando.status) }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="acoes-form">
+
+      <button type="button" class="btn-primary" [disabled]="salvandoOrcamento" (click)="salvarOrcamento()">
+        {{ salvandoOrcamento ? 'Salvando...' : 'Salvar orçamento' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarOrcamento()">
+        Cancelar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MODAL PAGAMENTO
+========================================= -->
+
+<div *ngIf="exibindoPagamento" class="modal-fundo">
+
+  <div class="modal-card modal-pagamento">
+
+    <h2>Registrar Pagamento</h2>
+
+    <p class="modal-descricao" *ngIf="orcamentoPagamento">
+      Orçamento #{{ orcamentoPagamento.id }} —
+      Saldo atual: {{ formatarMoeda(orcamentoPagamento.saldoDevedor) }}
+    </p>
+
+    <div class="pagamento-form-grid">
+      <label>
+        Data do pagamento
+        <input type="datetime-local" [(ngModel)]="pagamentoForm.dataPagamento" name="dataPagamento">
+      </label>
+
+      <label>
+        Valor pago *
+        <input type="number" min="0" step="0.01" [(ngModel)]="pagamentoForm.valorPago" name="valorPago">
+      </label>
+
+      <label>
+        Forma de pagamento
+        <select [(ngModel)]="pagamentoForm.formaPagamento" name="formaPagamento">
+          <option value="PIX">PIX</option>
+          <option value="DINHEIRO">Dinheiro</option>
+          <option value="CARTAO_CREDITO">Cartão de crédito</option>
+          <option value="CARTAO_DEBITO">Cartão de débito</option>
+          <option value="TRANSFERENCIA">Transferência</option>
+          <option value="OUTRO">Outro</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="observacoes-orcamento">
+      Observação
+      <textarea rows="3" [(ngModel)]="pagamentoForm.observacao" name="observacaoPagamento"></textarea>
+    </label>
+
+    <div class="acoes-form">
+      <button type="button" class="btn-primary" [disabled]="salvandoPagamento" (click)="registrarPagamento()">
+        {{ salvandoPagamento ? 'Salvando...' : 'Registrar pagamento' }}
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarPagamento()">
+        Cancelar
+      </button>
     </div>
 
   </div>
