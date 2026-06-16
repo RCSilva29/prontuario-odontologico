@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/documentos")
@@ -80,6 +83,28 @@ public class DocumentoController {
 
                 return ResponseEntity.ok()
                                 .headers(criarHeadersPdf("orcamento.pdf"))
+                                .body(pdf);
+        }
+
+        @GetMapping("/agenda")
+        public ResponseEntity<byte[]> gerarAgenda(
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
+                        @RequestParam(defaultValue = "semanal") String tipo,
+                        Authentication authentication) {
+
+                byte[] pdf = documentoPdfService.gerarAgenda(
+                                inicio,
+                                fim,
+                                tipo,
+                                obterEmailUsuarioLogado(authentication));
+
+                String nomeArquivo = "mensal".equalsIgnoreCase(tipo)
+                                ? "agenda_mensal.pdf"
+                                : "agenda_semanal.pdf";
+
+                return ResponseEntity.ok()
+                                .headers(criarHeadersPdf(nomeArquivo))
                                 .body(pdf);
         }
 

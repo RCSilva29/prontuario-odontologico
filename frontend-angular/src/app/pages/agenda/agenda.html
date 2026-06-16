@@ -1,0 +1,220 @@
+<section class="agenda-page">
+    <div class="agenda-topo">
+        <div>
+            <h1>Agenda de Atendimentos</h1>
+            <p>Controle de consultas agendadas</p>
+        </div>
+    </div>
+
+    <p *ngIf="erro" class="alerta erro">{{ erro }}</p>
+    <p *ngIf="sucesso" class="alerta sucesso">{{ sucesso }}</p>
+
+    <div class="agenda-card">
+        <div class="agenda-toolbar">
+            <div class="toolbar-esquerda">
+                <button type="button" class="btn-toolbar" (click)="semanaAnterior()">‹</button>
+                <button type="button" class="btn-toolbar" (click)="irParaHoje()">
+                    Hoje
+                </button>
+
+                <button type="button" class="btn-toolbar" (click)="proximaSemana()">›</button>
+
+                <strong>{{ periodoSemana() }}</strong>
+            </div>
+
+            <div class="toolbar-direita">
+                <button type="button" class="btn-toolbar btn-pdf" [disabled]="gerandoPdf" (click)="gerarPdfSemana()">
+                    {{ gerandoPdf ? 'Gerando...' : 'PDF Semana' }}
+                </button>
+
+                <button type="button" class="btn-toolbar btn-pdf" [disabled]="gerandoPdf" (click)="gerarPdfMes()">
+                    PDF Mês
+                </button>
+            </div>
+        </div>
+
+        <p *ngIf="carregando" class="ajuda">Carregando agenda...</p>
+
+        <div class="agenda-grade" *ngIf="!carregando">
+            <div class="celula-horario cabecalho-vazio"></div>
+
+            <div class="cabecalho-dia" *ngFor="let dia of diasSemana">
+                <span>{{ dia.rotulo }}</span>
+                <strong>{{ dia.diaMes }}</strong>
+            </div>
+
+            <ng-container *ngFor="let horario of horarios">
+                <div class="celula-horario">
+                    {{ horario }}
+                </div>
+
+                <div class="celula-agenda" *ngFor="let dia of diasSemana">
+                    <ng-container *ngIf="consultaNoSlot(dia.data, horario) as consulta; else slotLivre">
+                        <div class="consulta-card" draggable="true" [ngClass]="corDentista(consulta.dentistaId)"
+                            (click)="abrirDetalheConsulta(consulta)" (dragstart)="iniciarArraste(consulta, $event)"
+                            (dragend)="finalizarArraste()">
+
+                            <div class="consulta-campo">
+                                <div class="consulta-label">Paciente:</div>
+                                <div class="consulta-valor">{{ consulta.pacienteNome }}</div>
+                            </div>
+
+                            <div class="consulta-campo">
+                                <div class="consulta-label">Dentista:</div>
+                                <div class="consulta-valor">{{ nomeResumido(consulta.dentistaNome) }}</div>
+                            </div>
+
+                            <div class="consulta-observacao" *ngIf="consulta.observacao">
+                                {{ consulta.observacao }}
+                            </div>
+
+                            <button type="button" class="btn-excluir-consulta"
+                                (click)="excluir(consulta); $event.stopPropagation()">
+                                Excluir
+                            </button>
+
+                        </div>
+                    </ng-container>
+
+                    <ng-template #slotLivre>
+                        <button type="button" class="slot-livre" (click)="abrirConsultaNoSlot(dia.data, horario)"
+                            (dragover)="permitirSoltar($event)" (drop)="soltarConsulta(dia.data, horario, $event)">
+                            +
+                        </button>
+                    </ng-template>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</section>
+
+<div class="modal-fundo" *ngIf="modalAberto">
+    <div class="modal-card modal-agenda">
+        <div class="modal-header">
+            <div>
+                <h2>Agendar consulta</h2>
+                <p>Selecione paciente, dentista, data e horário disponível.</p>
+            </div>
+
+            <button type="button" class="btn-fechar" (click)="fecharModal()">×</button>
+        </div>
+
+        <p *ngIf="erro" class="alerta erro">{{ erro }}</p>
+
+        <div class="form-grid">
+            <label class="campo-paciente">
+                Paciente *
+                <input type="text" [(ngModel)]="form.pacienteBusca" name="pacienteBusca"
+                    placeholder="Digite o nome do paciente" autocomplete="off" (input)="buscarPacientes()">
+
+                <div class="resultado-pacientes" *ngIf="pacientesEncontrados.length > 0">
+                    <button type="button" *ngFor="let paciente of pacientesEncontrados"
+                        (click)="selecionarPaciente(paciente)">
+                        {{ paciente.nome }}
+                    </button>
+                </div>
+
+                <div class="paciente-selecionado" *ngIf="pacienteSelecionado">
+                    Paciente selecionado: <strong>{{ pacienteSelecionado.nome }}</strong>
+                </div>
+
+                <div class="paciente-nao-encontrado" *ngIf="pacienteNaoEncontrado()">
+                    Paciente não encontrado.
+                    <a routerLink="/pacientes/novo">Cadastrar paciente</a>
+                </div>
+            </label>
+
+            <label *ngIf="!isAdmin()">
+                Dentista
+                <input type="text" [value]="dentistaLogadoNome" disabled>
+            </label>
+
+            <label *ngIf="isAdmin()">
+                Dentista *
+                <select [(ngModel)]="form.dentistaId" name="dentistaId">
+                    <option [ngValue]="0">Selecione</option>
+                    <option *ngFor="let dentista of dentistas" [ngValue]="dentista.id">
+                        {{ dentista.nome }}
+                    </option>
+                </select>
+            </label>
+
+            <label>
+                Data *
+                <input type="date" [(ngModel)]="form.data" name="dataConsulta">
+            </label>
+
+            <label>
+                Horário *
+                <select [(ngModel)]="form.horario" name="horarioConsulta">
+                    <option value="">Selecione</option>
+                    <option *ngFor="let horario of horariosDisponiveisParaFormulario()" [value]="horario">
+                        {{ horario }}
+                    </option>
+                </select>
+            </label>
+        </div>
+
+        <label class="campo-observacao">
+            Observação
+            <textarea rows="3" [(ngModel)]="form.observacao" name="observacao"></textarea>
+        </label>
+
+        <div class="acoes-form">
+            <button type="button" class="btn-primary" [disabled]="salvando" (click)="salvar()">
+                {{ salvando ? 'Salvando...' : 'Agendar consulta' }}
+            </button>
+
+            <button type="button" class="btn-secondary" (click)="fecharModal()">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-fundo" *ngIf="consultaDetalhe">
+    <div class="modal-card modal-detalhe-consulta">
+        <div class="modal-header">
+            <div>
+                <h2>Detalhes da consulta</h2>
+                <p>Visualização completa do agendamento.</p>
+            </div>
+
+            <button type="button" class="btn-fechar" (click)="fecharDetalheConsulta()">×</button>
+        </div>
+
+        <div class="detalhe-consulta-grid">
+            <div>
+                <strong>Paciente</strong>
+                <span>{{ consultaDetalhe.pacienteNome }}</span>
+            </div>
+
+            <div>
+                <strong>Dentista</strong>
+                <span>{{ consultaDetalhe.dentistaNome }}</span>
+            </div>
+
+            <div>
+                <strong>Data</strong>
+                <span>{{ formatarDataConsulta(consultaDetalhe.dataHoraInicio) }}</span>
+            </div>
+
+            <div>
+                <strong>Horário</strong>
+                <span>{{ formatarPeriodo(consultaDetalhe) }}</span>
+            </div>
+        </div>
+
+        <div class="detalhe-observacao">
+            <strong>Observação</strong>
+            <p>{{ consultaDetalhe.observacao || 'Nenhuma observação informada.' }}</p>
+        </div>
+
+        <div class="acoes-form">
+            <button type="button" class="btn-secondary" (click)="fecharDetalheConsulta()">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>

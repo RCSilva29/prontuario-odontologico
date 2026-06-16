@@ -46,4 +46,15 @@ export class DocumentoService {
             { responseType: 'blob' }
         );
     }
+
+    gerarAgenda(inicio: string, fim: string, tipo: 'semanal' | 'mensal') {
+        const inicioParam = encodeURIComponent(inicio);
+        const fimParam = encodeURIComponent(fim);
+
+        return this.http.get(
+            `${this.apiUrl}/agenda?inicio=${inicioParam}&fim=${fimParam}&tipo=${tipo}`,
+            { responseType: 'blob' }
+        );
+    }
+
 }

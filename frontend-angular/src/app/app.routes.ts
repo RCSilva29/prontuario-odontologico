@@ -9,6 +9,7 @@ import { authGuard } from './guards/auth.guard';
 import { Usuarios } from './pages/usuarios/usuarios';
 import { MinhaSenha } from './pages/minha-senha/minha-senha';
 import { adminGuard } from './guards/admin.guard';
+import { Agenda } from './pages/agenda/agenda';
 
 export const routes: Routes = [
   {
@@ -43,6 +44,11 @@ export const routes: Routes = [
   {
     path: 'pacientes/:id',
     component: PacienteDetalhe,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'agenda',
+    component: Agenda,
     canActivate: [authGuard]
   },
   {

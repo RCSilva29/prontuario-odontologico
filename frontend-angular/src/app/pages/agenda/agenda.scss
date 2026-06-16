@@ -1,0 +1,451 @@
+.agenda-page {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.agenda-topo {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.agenda-topo h1 {
+    margin: 0;
+    color: #0f172a;
+}
+
+.agenda-topo p {
+    margin: 6px 0 0;
+    color: #64748b;
+}
+
+.agenda-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow-x: auto;
+}
+
+.agenda-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.toolbar-esquerda,
+.toolbar-direita {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolbar-esquerda strong {
+    margin-left: 10px;
+    padding: 9px 14px;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    color: #0f172a;
+    border-radius: 10px;
+    font-weight: 900;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.btn-toolbar {
+    border: none;
+    background: #e0f2fe;
+    color: #075985;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.btn-toolbar:hover {
+    background: #bae6fd;
+}
+
+.btn-toolbar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-pdf {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-pdf:hover:not(:disabled) {
+    background: #bbf7d0;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.agenda-grade {
+    display: grid;
+    grid-template-columns: 72px repeat(5, minmax(220px, 1fr));
+    min-width: 1170px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cabecalho-vazio,
+.cabecalho-dia,
+.celula-horario,
+.celula-agenda {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.cabecalho-dia {
+    padding: 12px;
+    background: #f8fafc;
+}
+
+.cabecalho-dia span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.cabecalho-dia strong {
+    display: block;
+    color: #0f172a;
+    font-size: 22px;
+    margin-top: 4px;
+}
+
+.celula-horario {
+    padding: 12px 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 800;
+    font-size: 13px;
+    text-align: center;
+}
+
+.celula-agenda {
+    min-height: 135px;
+    padding: 8px;
+    background: #ffffff;
+}
+
+.consulta-card {
+    position: relative;
+    min-height: 118px;
+    height: 100%;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-left: 5px solid #2563eb;
+    border-radius: 8px;
+    padding: 9px 60px 9px 10px;
+    box-sizing: border-box;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.12);
+    cursor: grab;
+}
+
+.consulta-card:active {
+    cursor: grabbing;
+}
+
+.consulta-campo {
+    margin-bottom: 5px;
+}
+
+.consulta-label {
+    font-size: 13px;
+    font-weight: 900;
+    color: inherit;
+    line-height: 1.1;
+}
+
+.consulta-valor {
+    font-size: 13px;
+    font-weight: 700;
+    color: inherit;
+    padding-left: 12px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+    word-break: normal;
+}
+
+.consulta-observacao {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+    color: inherit;
+    opacity: 0.95;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dentista-cor-1 {
+    background: #e8f1ff;
+    color: #1e40af;
+    border-left: 5px solid #3b82f6;
+}
+
+.dentista-cor-2 {
+    background: #fff1f2;
+    color: #be123c;
+    border-left: 5px solid #f43f5e;
+}
+
+.btn-excluir-consulta {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    border: none;
+    background: rgba(15, 23, 42, 0.08);
+    color: inherit;
+    border-radius: 6px;
+    padding: 4px 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.btn-excluir-consulta:hover {
+    background: rgba(15, 23, 42, 0.14);
+}
+
+.slot-livre {
+    width: 100%;
+    height: 100%;
+    min-height: 104px;
+    border: 1px dashed transparent;
+    background: transparent;
+    color: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.slot-livre:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.alerta {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.erro {
+    background: #fee2e2;
+    border-left: 5px solid #dc2626;
+    color: #991b1b;
+}
+
+.sucesso {
+    background: #dcfce7;
+    border-left: 5px solid #16a34a;
+    color: #166534;
+}
+
+.ajuda {
+    color: #64748b;
+}
+
+/* Modal */
+
+.modal-fundo {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+}
+
+.modal-card {
+    background: #ffffff;
+    width: 900px;
+    max-width: 96vw;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #0f172a;
+}
+
+.modal-header p {
+    margin: 6px 0 0;
+    color: #64748b;
+}
+
+.btn-fechar {
+    border: none;
+    background: #e5e7eb;
+    color: #0f172a;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    gap: 14px;
+}
+
+label {
+    display: block;
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.campo-paciente {
+    position: relative;
+}
+
+.resultado-pacientes {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 72px;
+    z-index: 10;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+.resultado-pacientes button {
+    display: block;
+    width: 100%;
+    border: none;
+    background: white;
+    text-align: left;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.resultado-pacientes button:hover {
+    background: #eff6ff;
+}
+
+.paciente-selecionado {
+    margin-top: 8px;
+    color: #166534;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.paciente-nao-encontrado {
+    margin-top: 8px;
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.paciente-nao-encontrado a {
+    color: #2563eb;
+    margin-left: 6px;
+}
+
+.campo-observacao {
+    margin-top: 16px;
+}
+
+.acoes-form {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    border: none;
+    background: #e5e7eb;
+    color: #111827;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+@media (max-width: 900px) {
+
+    .agenda-topo,
+    .agenda-toolbar,
+    .toolbar-esquerda,
+    .toolbar-direita,
+    .acoes-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

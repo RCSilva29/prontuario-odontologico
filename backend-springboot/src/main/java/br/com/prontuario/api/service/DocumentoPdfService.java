@@ -11,6 +11,7 @@ import br.com.prontuario.api.entity.OrcamentoItem;
 import br.com.prontuario.api.entity.OrcamentoPagamento;
 import br.com.prontuario.api.entity.Paciente;
 import br.com.prontuario.api.entity.Usuario;
+import br.com.prontuario.api.entity.Consulta;
 import br.com.prontuario.api.repository.AnamneseRepository;
 import br.com.prontuario.api.repository.AtendimentoRepository;
 import br.com.prontuario.api.repository.OdontogramaRepository;
@@ -18,6 +19,7 @@ import br.com.prontuario.api.repository.OrcamentoPagamentoRepository;
 import br.com.prontuario.api.repository.OrcamentoRepository;
 import br.com.prontuario.api.repository.PacienteRepository;
 import br.com.prontuario.api.repository.UsuarioRepository;
+import br.com.prontuario.api.repository.ConsultaRepository;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +52,7 @@ public class DocumentoPdfService {
     private final OrcamentoRepository orcamentoRepository;
     private final OrcamentoPagamentoRepository orcamentoPagamentoRepository;
     private final PacienteService pacienteService;
+    private final ConsultaRepository consultaRepository;
 
     public DocumentoPdfService(
             PacienteRepository pacienteRepository,
@@ -58,7 +62,8 @@ public class DocumentoPdfService {
             AtendimentoRepository atendimentoRepository,
             OrcamentoRepository orcamentoRepository,
             OrcamentoPagamentoRepository orcamentoPagamentoRepository,
-            PacienteService pacienteService) {
+            PacienteService pacienteService,
+            ConsultaRepository consultaRepository) {
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
         this.anamneseRepository = anamneseRepository;
@@ -67,6 +72,7 @@ public class DocumentoPdfService {
         this.orcamentoRepository = orcamentoRepository;
         this.orcamentoPagamentoRepository = orcamentoPagamentoRepository;
         this.pacienteService = pacienteService;
+        this.consultaRepository = consultaRepository;
     }
 
     public byte[] gerarAtestado(Long pacienteId, AtestadoRequest request, String emailUsuarioLogado) {
@@ -213,6 +219,159 @@ public class DocumentoPdfService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao gerar orçamento em PDF", e);
         }
+    }
+
+    public byte[] gerarAgenda(LocalDateTime inicio, LocalDateTime fim, String tipo, String emailUsuarioLogado) {
+        buscarDentista(emailUsuarioLogado);
+
+        if (inicio == null || fim == null) {
+            throw new RuntimeException("Período da agenda é obrigatório");
+        }
+
+        if (!fim.isAfter(inicio)) {
+            throw new RuntimeException("Data final deve ser posterior à data inicial");
+        }
+
+        String titulo = "mensal".equalsIgnoreCase(tipo)
+                ? "AGENDA MENSAL"
+                : "AGENDA SEMANAL";
+
+        List<Consulta> consultas = consultaRepository
+                .findByDataHoraInicioBetweenOrderByDataHoraInicioAsc(inicio, fim)
+                .stream()
+                .filter(consulta -> !"CANCELADA".equals(consulta.getStatus()))
+                .toList();
+
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+            Document document = new Document(PageSize.A4, 45, 45, 220, 60);
+            PdfWriter writer = PdfWriter.getInstance(document, output);
+            writer.setPageEvent(new DocumentoClinicoPageEvent(titulo));
+
+            document.open();
+
+            Font secao = new Font(Font.HELVETICA, 12, Font.BOLD, AZUL_ESCURO);
+            Font normal = new Font(Font.HELVETICA, 9, Font.NORMAL, Color.BLACK);
+            Font normalNegrito = new Font(Font.HELVETICA, 9, Font.BOLD, Color.BLACK);
+            Font pequeno = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.BLACK);
+
+            adicionarPeriodoAgendaPdf(document, inicio, fim, normal, normalNegrito);
+            adicionarConsultasAgendaPdf(document, inicio.toLocalDate(), fim.toLocalDate(), consultas, secao, normal,
+                    normalNegrito, pequeno);
+
+            document.close();
+
+            return output.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar agenda em PDF", e);
+        }
+    }
+
+    private void adicionarPeriodoAgendaPdf(
+            Document document,
+            LocalDateTime inicio,
+            LocalDateTime fim,
+            Font normal,
+            Font normalNegrito) throws DocumentException {
+
+        DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        PdfPTable tabela = new PdfPTable(1);
+        tabela.setWidthPercentage(100);
+        tabela.setSpacingAfter(16f);
+
+        adicionarCelulaRotuloValorComBorda(
+                tabela,
+                "Período:",
+                inicio.format(dataFormatter) + " a " + fim.format(dataFormatter),
+                normalNegrito,
+                normal);
+
+        document.add(tabela);
+    }
+
+    private void adicionarConsultasAgendaPdf(
+            Document document,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            List<Consulta> consultas,
+            Font secao,
+            Font normal,
+            Font normalNegrito,
+            Font pequeno) throws DocumentException {
+
+        DateTimeFormatter dataDiaFormatter = DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy", new Locale("pt", "BR"));
+        DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        LocalDate dia = dataInicio;
+
+        while (!dia.isAfter(dataFim)) {
+            final LocalDate diaAtual = dia;
+
+            List<Consulta> consultasDoDia = consultas.stream()
+                    .filter(consulta -> consulta.getDataHoraInicio() != null
+                            && consulta.getDataHoraInicio().toLocalDate().equals(diaAtual))
+                    .toList();
+
+            adicionarTituloSecao(document, primeiraLetraMaiuscula(diaAtual.format(dataDiaFormatter)), secao);
+
+            if (consultasDoDia.isEmpty()) {
+                Paragraph vazio = new Paragraph("Nenhuma consulta agendada para esta data.", normal);
+                vazio.setSpacingAfter(10f);
+                document.add(vazio);
+                dia = dia.plusDays(1);
+                continue;
+            }
+
+            PdfPTable tabela = new PdfPTable(4);
+            tabela.setWidthPercentage(100);
+            tabela.setWidths(new float[] { 0.8f, 2.2f, 2.0f, 3.0f });
+            tabela.setSpacingAfter(14f);
+
+            adicionarCabecalhoTabela(tabela, "Horário", normalNegrito);
+            adicionarCabecalhoTabela(tabela, "Paciente", normalNegrito);
+            adicionarCabecalhoTabela(tabela, "Dentista", normalNegrito);
+            adicionarCabecalhoTabela(tabela, "Observação", normalNegrito);
+
+            for (Consulta consulta : consultasDoDia) {
+                adicionarCelulaTabela(tabela, consulta.getDataHoraInicio().format(horaFormatter), normal);
+                adicionarCelulaTabela(tabela,
+                        valor(consulta.getPaciente() == null ? null : consulta.getPaciente().getNome()), normal);
+                adicionarCelulaTabela(tabela,
+                        valor(consulta.getDentista() == null ? null : consulta.getDentista().getNome()), normal);
+                adicionarCelulaTabela(tabela, valor(consulta.getObservacao()), pequeno);
+            }
+
+            document.add(tabela);
+            dia = dia.plusDays(1);
+        }
+    }
+
+    private void adicionarCelulaRotuloValorComBorda(
+            PdfPTable tabela,
+            String rotulo,
+            String valor,
+            Font fonteRotulo,
+            Font fonteValor) {
+
+        Phrase phrase = new Phrase();
+        phrase.add(new Chunk(rotulo + " ", fonteRotulo));
+        phrase.add(new Chunk(valor(valor), fonteValor));
+
+        PdfPCell cell = new PdfPCell(phrase);
+        cell.setBorderColor(new Color(203, 213, 225));
+        cell.setPadding(8f);
+        tabela.addCell(cell);
+    }
+
+    private String primeiraLetraMaiuscula(String texto) {
+        if (texto == null || texto.isBlank()) {
+            return "";
+        }
+
+        return texto.substring(0, 1).toUpperCase(new Locale("pt", "BR")) + texto.substring(1);
     }
 
     private Usuario buscarDentista(String emailUsuarioLogado) {

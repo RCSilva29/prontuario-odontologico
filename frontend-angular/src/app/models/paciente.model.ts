@@ -8,4 +8,6 @@ export interface Paciente {
   observacoes: string;
   ativo: boolean;
   dataCriacao: string;
+  dentistaId?: number;
+  dentistaNome?: string;
 }
