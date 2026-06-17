@@ -296,16 +296,22 @@ O sistema foi desenvolvido para permitir:
 
 **Rafael Carvalho da Silva**
 
-Desenvolvedor responsável pelo projeto **Prontuário Odontológico**, focado na criação de soluções para gestão clínica, automação de processos e desenvolvimento de sistemas corporativos.
+Desenvolvedor de Software com ampla experiência no desenvolvimento de aplicações corporativas, sistemas web e soluções voltadas à automação de processos de negócio.
 
-📧 **E-mail:** avliscleafar@gmail.com
+Possui atuação em todo o ciclo de desenvolvimento de software, desde o levantamento de requisitos e modelagem de dados até a implementação, testes, implantação e sustentação de sistemas em produção.
 
-💼 **LinkedIn:**  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafael%20Carvalho%20da%20Silva-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafael-silva-9688ab128)
+Neste projeto, foi responsável pela arquitetura e desenvolvimento completo da solução, utilizando tecnologias modernas para backend, frontend, banco de dados e infraestrutura, incluindo Java, Spring Boot, Angular, TypeScript, PostgreSQL, Docker, Docker Compose, Hibernate, JPA, Flyway, HTML, SCSS e Git.
+
+Possui experiência na construção de APIs REST, modelagem de banco de dados relacional, desenvolvimento de interfaces web responsivas, integração entre sistemas, controle de versionamento, containers e boas práticas de engenharia de software.
+
+Tem como foco o desenvolvimento de soluções robustas, escaláveis e de fácil manutenção, sempre priorizando qualidade de código, experiência do usuário e eficiência operacional.
+
 
 ---
 
 ### Contato
 
-- E-mail: avliscleafar@gmail.com
-- LinkedIn: https://www.linkedin.com/in/rafael-silva-9688ab128
+📧 **E-mail:** avliscleafar@gmail.com
+
+💼 **LinkedIn:**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafael%20Carvalho%20da%20Silva-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafael-silva-9688ab128)
