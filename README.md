@@ -1,12 +1,85 @@
 # 🦷 Prontuário Odontológico
 
-Sistema completo para gerenciamento de consultórios odontológicos, desenvolvido com **Spring Boot**, **Angular** e **PostgreSQL**, com implantação simplificada via **Docker Compose**.
+Sistema completo para gestão de consultórios odontológicos, desenvolvido com **Spring Boot**, **Angular** e **PostgreSQL**, com implantação simplificada via **Docker Compose**.
 
-O sistema foi projetado para operar inicialmente em ambiente local (consultório único), permitindo controle de pacientes, prontuários, odontogramas, orçamentos, pagamentos e agenda compartilhada entre dentistas.
+Projetado para operação local em clínicas e consultórios, oferecendo controle integrado de pacientes, prontuários, odontogramas, orçamentos, pagamentos e agenda compartilhada.
 
 ---
 
-# 📋 Funcionalidades
+## 📸 Visão Geral do Sistema
+
+### Tela de Login
+
+![Tela de Login](docs/imagens/login.png)
+
+Controle seguro de acesso através de usuários e perfis.
+
+---
+
+### Gestão de Pacientes
+
+![Pacientes](docs/imagens/pacientes.png)
+
+- Cadastro completo de pacientes
+- Pesquisa rápida
+- Histórico clínico
+- Controle centralizado dos dados
+
+---
+
+### Odontograma
+
+![Odontograma](docs/imagens/odontograma.png)
+
+- Seleção individual de dentes
+- Seleção múltipla
+- Controle de próteses
+- Integração com orçamento
+
+---
+
+### Orçamentos
+
+![Orçamentos](docs/imagens/orcamento.png)
+![Orçamentos](docs/imagens/orcamento2.png)
+
+- Múltiplos procedimentos
+- Controle financeiro integrado
+- Pagamentos registrados
+- Saldo devedor automático
+- Status do tratamento
+
+---
+
+### Agenda Compartilhada
+
+![Agenda](docs/imagens/agenda.png)
+
+- Agenda semanal visual
+- Controle de horários
+- Reagendamento por arrastar e soltar
+- Identificação por dentista
+- Controle de conflitos
+
+---
+
+### PDF de Orçamento
+
+![PDF Orçamento](docs/imagens/pdf-orcamento.png)
+
+Geração profissional de orçamento para entrega ao paciente.
+
+---
+
+### PDF da Agenda
+
+![PDF Agenda](docs/imagens/pdf-agenda.png)
+
+Exportação semanal e mensal para consulta externa e compartilhamento.
+
+---
+
+# 🚀 Principais Funcionalidades
 
 ## 👥 Gestão de Pacientes
 
@@ -20,41 +93,37 @@ O sistema foi projetado para operar inicialmente em ambiente local (consultório
 
 ## 🩺 Anamnese
 
-Registro das principais informações clínicas:
+Registro clínico contendo:
 
 - Hipertensão
 - Diabetes
 - Alergias
-- Medicamentos em uso
+- Medicamentos
 - Tabagismo
 - Gravidez
-- Observações clínicas
+- Observações
 
 ---
 
-## 📎 Anexos
+## 📎 Gerenciamento de Anexos
 
-Gerenciamento de documentos do paciente:
+Upload e download de:
 
 - Radiografias
 - Fotografias
 - Exames
 - Receitas
 - Atestados
-- Outros documentos
-
-Upload e download diretamente pelo sistema.
+- Documentos diversos
 
 ---
 
 ## 🦷 Odontograma
 
-Controle visual dos tratamentos odontológicos.
+Recursos:
 
-### Recursos
-
-- Seleção individual de dentes
-- Seleção múltipla de dentes
+- Seleção individual
+- Seleção múltipla
 - Prótese total superior
 - Prótese total inferior
 - Prótese total completa
@@ -63,32 +132,23 @@ Controle visual dos tratamentos odontológicos.
 
 ## 💰 Orçamentos
 
-Controle completo de tratamentos e valores.
-
-### Recursos
-
-- Múltiplos procedimentos por orçamento
-- Controle por paciente
-- Numeração automática individual por paciente
+- Múltiplos itens por orçamento
 - Integração com odontograma
-- Cálculo automático de subtotais
 - Descontos
-- Validade do orçamento
+- Validade
+- Numeração automática por paciente
 
 ---
 
 ## 💳 Pagamentos
 
-Controle financeiro integrado.
+Controle automático de:
 
-### Recursos
+- Total do orçamento
+- Total pago
+- Saldo devedor
 
-- Registro de pagamentos
-- Histórico de recebimentos
-- Exclusão de pagamentos
-- Saldo devedor automático
-
-### Status automáticos
+Status:
 
 - ABERTO
 - PARCIAL
@@ -96,115 +156,67 @@ Controle financeiro integrado.
 
 ---
 
-## 📄 Geração de PDF
+## 📅 Agenda Compartilhada
+
+### Recursos
+
+- Agenda semanal
+- Horários de 30 em 30 minutos
+- Atendimento das 08h às 21h
+- Controle de conflitos
+- Reagendamento visual (Drag & Drop)
+
+### Regras de Negócio
+
+- Paciente vinculado ao dentista responsável
+- Não permite agendar paciente para outro dentista
+- Nem mesmo usuários administradores podem ignorar essa regra
+
+---
+
+## 📄 Geração de PDFs
 
 ### Orçamento
 
-Geração profissional contendo:
+Contendo:
 
 - Dados do paciente
 - Procedimentos
 - Valores
-- Pagamentos realizados
+- Pagamentos
 - Saldo devedor
-- Telefones do consultório
 
----
+### Agenda
 
-## 📅 Agenda Compartilhada
-
-Agenda visual compartilhada entre os profissionais.
-
-### Recursos
-
-- Visualização semanal
-- Horários de 30 em 30 minutos
-- Funcionamento entre 08:00 e 21:00
-- Consulta rápida da ocupação do consultório
-
-### Regras
-
-- Não permite conflitos de horário
-- Controle centralizado da agenda
-
-### Reagendamento
-
-Suporte a:
-
-- Drag and Drop (arrastar e soltar)
-- Mudança rápida de dia e horário
-
----
-
-## 🧑‍⚕️ Controle por Dentista
-
-Cada paciente possui um dentista responsável.
-
-### Regras implementadas
-
-- Pacientes só podem ser agendados com seu dentista responsável
-- Administradores não podem ignorar essa regra
-- Controle de integridade dos agendamentos
-
----
-
-## 🎨 Identificação Visual
-
-Consultas exibidas com cores distintas por dentista.
-
-Facilita:
-
-- Visualização rápida da agenda
-- Organização dos atendimentos
-- Controle de ocupação
-
----
-
-## 📑 PDF da Agenda
-
-Exportação da agenda em PDF.
-
-### Agenda Semanal
-
-Exibe:
-
-- Período da semana
-- Consultas organizadas por dia
+- Agenda semanal
+- Agenda mensal
+- Organização por dia
 - Paciente
 - Dentista
 - Observações
-
-### Agenda Mensal
-
-Exibe:
-
-- Todo o mês selecionado
-- Agrupamento por dia
-- Visão consolidada dos atendimentos
 
 ---
 
 # 🔐 Controle de Usuários
 
-Perfis disponíveis:
+## Administrador
 
-## ADMIN
-
-- Gerenciamento completo
 - Cadastro de usuários
+- Gestão completa do sistema
 - Visualização global
 
-## DENTISTA
+## Dentista
 
-- Acesso aos pacientes vinculados
-- Controle de agenda
-- Controle de tratamentos
+- Controle dos próprios pacientes
+- Agenda
+- Tratamentos
+- Orçamentos
 
 ---
 
 # 🛠️ Tecnologias Utilizadas
 
-## Backend
+### Backend
 
 - Java 21
 - Spring Boot
@@ -212,17 +224,17 @@ Perfis disponíveis:
 - Hibernate
 - Flyway
 
-## Frontend
+### Frontend
 
 - Angular
 - TypeScript
 - SCSS
 
-## Banco de Dados
+### Banco de Dados
 
 - PostgreSQL
 
-## Infraestrutura
+### Infraestrutura
 
 - Docker
 - Docker Compose
@@ -236,13 +248,13 @@ Perfis disponíveis:
 - Docker Desktop
 - Docker Compose
 
-## Executar o sistema
+## Executar
 
 ```bash
 docker compose up --build -d
 ```
 
-## Acessar
+## Acesso
 
 Frontend:
 
@@ -258,40 +270,42 @@ http://localhost:8080
 
 ---
 
-# 💾 Backup
+# 💾 Backup e Migração
 
-O sistema possui suporte para:
+O sistema foi desenvolvido para permitir:
 
-- Backup do banco PostgreSQL
+- Backup simplificado
 - Migração entre computadores
-- Recuperação dos dados do consultório
+- Preservação dos dados dos pacientes
+- Atualizações via Flyway sem perda de informações
 
 ---
 
-# 📈 Roadmap
-
-Funcionalidades planejadas:
+# 📈 Próximas Evoluções
 
 - Dashboard inicial
 - Indicadores financeiros
 - Relatórios gerenciais
-- Controle avançado de agenda
 - Confirmação de consultas
 - Integração com WhatsApp
-- Histórico financeiro por paciente
-
----
-
-# 📄 Licença
-
-Projeto desenvolvido para uso em consultórios odontológicos privados.
-
-Todos os direitos reservados.
+- Relatórios de faturamento
 
 ---
 
 # 👨‍💻 Autor
 
-**Rafael Silva Carvalho**
+**Rafael Carvalho da Silva**
 
-Sistema desenvolvido para gestão clínica odontológica, com foco em simplicidade, produtividade e operação local segura.
+Desenvolvedor responsável pelo projeto **Prontuário Odontológico**, focado na criação de soluções para gestão clínica, automação de processos e desenvolvimento de sistemas corporativos.
+
+📧 **E-mail:** avliscleafar@gmail.com
+
+💼 **LinkedIn:**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafael%20Carvalho%20da%20Silva-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafael-silva-9688ab128)
+
+---
+
+### Contato
+
+- E-mail: avliscleafar@gmail.com
+- LinkedIn: https://www.linkedin.com/in/rafael-silva-9688ab128
