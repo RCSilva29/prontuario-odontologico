@@ -16,6 +16,7 @@ public class UsuarioResponse {
     private LocalDateTime dataCriacao;
     private String perfil;
     private String especialidade;
+    private String telefone;
 
     public String getEspecialidade() {
         return especialidade;
@@ -23,6 +24,10 @@ public class UsuarioResponse {
 
     public String getCro() {
         return cro;
+    }
+
+    public String getTelefone() {
+        return telefone;
     }
 
     private String cro;
@@ -39,6 +44,7 @@ public class UsuarioResponse {
         this.perfil = usuario.getPerfil();
         this.especialidade = usuario.getEspecialidade();
         this.cro = usuario.getCro();
+        this.telefone = usuario.getTelefone();
     }
 
     public Long getId() {

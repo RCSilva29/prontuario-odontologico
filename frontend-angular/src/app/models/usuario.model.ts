@@ -10,6 +10,7 @@ export interface Usuario {
   trocaSenhaObrigatoria?: boolean;
   especialidade?: string;
   cro?: string;
+  telefone?: string;
 }
 
 export interface UsuarioRequest {
@@ -20,4 +21,5 @@ export interface UsuarioRequest {
   ativo?: boolean;
   especialidade?: string;
   cro?: string;
+  telefone?: string;
 }

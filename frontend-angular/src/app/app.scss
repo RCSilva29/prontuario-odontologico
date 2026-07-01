@@ -20,32 +20,33 @@ body {
 }
 
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 210px;
+  min-width: 210px;
   background: white;
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  padding: 22px 18px;
+  padding: 8px 14px 22px;
 }
 
 .logo {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 44px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: -8px;
+  margin-bottom: 38px;
+  width: 100%;
 }
 
 .logo-icon {
-  width: 86px;
-  height: 86px;
-  border-radius: 16px;
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
-  flex-shrink: 0;
 }
 
 .logo-icon img {
@@ -55,10 +56,7 @@ body {
 }
 
 .logo h1 {
-  margin: 0;
-  font-size: 19px;
-  line-height: 1.15;
-  color: #0f172a;
+  display: none;
 }
 
 .menu {
@@ -88,8 +86,8 @@ body {
 .main-area {
   flex: 1;
   min-width: 0;
-  width: calc(100vw - 260px);
-  max-width: calc(100vw - 260px);
+  width: calc(100vw - 210px);
+  max-width: calc(100vw - 210px);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -104,19 +102,6 @@ body {
   justify-content: space-between;
   padding: 0 28px;
   min-width: 0;
-}
-
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.topbar-brand img {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
 }
 
 .topbar-right {
@@ -203,27 +188,29 @@ body {
 
 @media (max-width: 1000px) {
   .sidebar {
-    width: 220px;
-    min-width: 220px;
-    padding: 18px 14px;
+    width: 190px;
+    min-width: 190px;
+    padding: 6px 12px 18px;
   }
 
   .main-area {
-    width: calc(100vw - 220px);
-    max-width: calc(100vw - 220px);
+    width: calc(100vw - 190px);
+    max-width: calc(100vw - 190px);
   }
 
   .logo {
-    gap: 10px;
+    justify-content: center;
+    margin-top: -6px;
+    margin-bottom: 32px;
   }
 
   .logo-icon {
-    width: 64px;
-    height: 64px;
+    width: 130px;
+    height: 130px;
   }
 
   .logo h1 {
-    font-size: 16px;
+    display: none;
   }
 
   .content {

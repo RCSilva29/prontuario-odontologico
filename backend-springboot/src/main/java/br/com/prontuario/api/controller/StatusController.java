@@ -8,6 +8,6 @@ public class StatusController {
 
     @GetMapping("/status")
     public String status() {
-        return "API do Prontuário Odontológico está funcionando";
+        return "API Odonto Pacheco está funcionando";
     }
 }

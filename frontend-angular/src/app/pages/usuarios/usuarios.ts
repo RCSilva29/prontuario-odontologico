@@ -112,7 +112,8 @@ export class Usuarios implements OnInit {
       perfil: usuario.perfil,
       ativo: usuario.ativo,
       especialidade: usuario.especialidade,
-      cro: usuario.cro
+      cro: usuario.cro,
+      telefone: usuario.telefone
     };
   }
 
@@ -154,6 +155,11 @@ export class Usuarios implements OnInit {
 
       if (!this.form.cro?.trim()) {
         this.erro = 'Informe o CRO do dentista';
+        return;
+      }
+
+      if (!this.form.telefone?.trim()) {
+        this.erro = 'Informe o telefone do dentista';
         return;
       }
     }

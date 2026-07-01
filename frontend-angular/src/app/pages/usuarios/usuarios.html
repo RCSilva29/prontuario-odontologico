@@ -57,6 +57,11 @@
       <input type="text" name="cro" [(ngModel)]="form.cro" placeholder="Ex.: CRO-RJ 12345">
     </label>
 
+    <label *ngIf="form.perfil === 'DENTISTA'">
+      Telefone *
+      <input type="text" name="telefone" [(ngModel)]="form.telefone" placeholder="Ex.: (21) 99158-0796">
+    </label>
+
     <label *ngIf="usuarioEditando">
       Situação *
 

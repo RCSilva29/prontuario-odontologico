@@ -855,3 +855,26 @@ app-odontograma-card {
   border-color: #dc2626 !important;
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.22) !important;
 }
+
+/* Receituário Controlado */
+.btn-receituario-controlado {
+  background: #7c2d12;
+}
+
+.btn-receituario-controlado:hover {
+  background: #9a3412;
+}
+
+.resumo-documento {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 14px;
+}

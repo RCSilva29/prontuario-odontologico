@@ -52,6 +52,11 @@ export class PacienteDetalhe implements OnInit {
   orientacoesReceituario = '';
   gerandoReceituario = false;
 
+  // Receituário Controlado
+  exibindoReceituarioControlado = false;
+  prescricaoReceituarioControlado = '';
+  gerandoReceituarioControlado = false;
+
   exibindoProntuario = false;
   gerandoProntuario = false;
 
@@ -225,6 +230,60 @@ export class PacienteDetalhe implements OnInit {
       });
   }
 
+  // Receituário Controlado
+  abrirReceituarioControlado(): void {
+    this.erro = '';
+    this.exibindoReceituarioControlado = true;
+    this.prescricaoReceituarioControlado = '';
+  }
+
+  cancelarReceituarioControlado(): void {
+    this.exibindoReceituarioControlado = false;
+    this.prescricaoReceituarioControlado = '';
+    this.gerandoReceituarioControlado = false;
+  }
+
+  gerarReceituarioControlado(): void {
+    this.erro = '';
+
+    if (!this.paciente) {
+      this.erro = 'Paciente não identificado para gerar receituário controlado';
+      return;
+    }
+
+    if (!this.prescricaoReceituarioControlado.trim()) {
+      this.erro = 'Informe a prescrição do receituário controlado';
+      return;
+    }
+
+    this.gerandoReceituarioControlado = true;
+
+    this.documentoService
+      .gerarReceituarioControlado(
+        this.paciente.id,
+        this.prescricaoReceituarioControlado.trim()
+      )
+      .subscribe({
+        next: (pdf) => {
+          this.gerandoReceituarioControlado = false;
+
+          this.salvarEAbrirPdf(
+            pdf,
+            this.nomeArquivoDocumento('receituario_controlado')
+          );
+
+          this.cancelarReceituarioControlado();
+        },
+        error: (erro) => {
+          this.gerandoReceituarioControlado = false;
+          this.erro =
+            erro?.error?.erro ||
+            erro?.error?.message ||
+            'Erro ao gerar receituário controlado';
+        }
+      });
+  }
+
   abrirProntuario(): void {
     this.erro = '';
     this.exibindoProntuario = true;
@@ -306,7 +365,7 @@ export class PacienteDetalhe implements OnInit {
     }, 3000);
   }
 
-  private nomeArquivoDocumento(prefixo: 'atestado' | 'receituario' | 'prontuario'): string {
+  private nomeArquivoDocumento(prefixo: 'atestado' | 'receituario' | 'receituario_controlado' | 'prontuario'): string {
     const nomePaciente = (this.paciente?.nome || 'paciente')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')

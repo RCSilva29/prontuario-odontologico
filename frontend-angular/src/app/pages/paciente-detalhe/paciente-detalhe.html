@@ -124,7 +124,12 @@
             </button>
 
             <button type="button" class="btn-documento btn-receituario" (click)="abrirReceituario()">
-              💊 Gerar Receituário
+              💊 Receituário Simples
+            </button>
+
+            <button type="button" class="btn-documento btn-receituario-controlado"
+              (click)="abrirReceituarioControlado()">
+              🧾 Receituário Controlado
             </button>
 
             <button type="button" class="btn-documento btn-prontuario" (click)="abrirProntuario()">
@@ -218,6 +223,56 @@
       </button>
 
       <button type="button" class="btn-secondary" (click)="cancelarReceituario()">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MODAL RECEITUÁRIO CONTROLADO
+========================================= -->
+
+<div *ngIf="exibindoReceituarioControlado" class="modal-fundo">
+
+  <div class="modal-card">
+
+    <h2>Gerar Receituário Controlado</h2>
+
+    <p class="modal-descricao">
+      Os dados do paciente e CPF serão preenchidos automaticamente no PDF.
+      O endereço ficará em branco para preenchimento manual. Informe apenas a prescrição.
+    </p>
+
+    <div *ngIf="paciente" class="resumo-documento">
+      <strong>Paciente:</strong> {{ paciente.nome }}
+      <span>|</span>
+      <strong>CPF:</strong> {{ formatarCpf(paciente.cpf) }}
+    </div>
+
+    <label>
+      Prescrição *
+
+      <textarea rows="10" name="prescricaoReceituarioControlado" [(ngModel)]="prescricaoReceituarioControlado">
+      </textarea>
+
+    </label>
+
+    <div class="acoes-form">
+
+      <button type="button" class="btn-primary" [disabled]="gerandoReceituarioControlado"
+        (click)="gerarReceituarioControlado()">
+
+        {{ gerandoReceituarioControlado ? 'Gerando PDF...' : 'Gerar PDF' }}
+
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="cancelarReceituarioControlado()">
 
         Cancelar
 

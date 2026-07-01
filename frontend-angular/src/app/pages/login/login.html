@@ -1,6 +1,6 @@
 <section class="login-page">
   <div class="login-card">
-    <img src="/LogoSisOdonto.png" alt="Consultório Odonto" class="logo">
+    <img src="/LogoSisOdonto.png" alt="Odonto Pacheco" class="logo">
 
     <h1>Acesso ao Sistema</h1>
     <p>Entre com seu email e senha</p>
@@ -10,20 +10,12 @@
     <form (ngSubmit)="entrar()">
       <label>
         Email
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          placeholder="informe seu email">
+        <input type="email" name="email" [(ngModel)]="email" placeholder="informe seu email">
       </label>
 
       <label>
         Senha
-        <input
-          type="password"
-          name="senha"
-          [(ngModel)]="senha"
-          placeholder="Digite sua senha">
+        <input type="password" name="senha" [(ngModel)]="senha" placeholder="Digite sua senha">
       </label>
 
       <button type="submit" [disabled]="carregando">

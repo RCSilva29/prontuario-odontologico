@@ -32,6 +32,15 @@ export class DocumentoService {
         );
     }
 
+    // Receituário Controlado
+    gerarReceituarioControlado(pacienteId: number, prescricao: string) {
+        return this.http.post(
+            `${this.apiUrl}/pacientes/${pacienteId}/receituario-controlado`,
+            { prescricao, orientacoes: '' },
+            { responseType: 'blob' }
+        );
+    }
+
     gerarProntuario(pacienteId: number, request: ProntuarioPdfRequest) {
         return this.http.post(
             `${this.apiUrl}/pacientes/${pacienteId}/prontuario`,

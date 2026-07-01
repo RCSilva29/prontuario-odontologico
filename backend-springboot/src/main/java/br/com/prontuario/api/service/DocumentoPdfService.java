@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,7 +106,7 @@ public class DocumentoPdfService {
 
     public byte[] gerarReceituario(Long pacienteId, ReceituarioRequest request, String emailUsuarioLogado) {
         Paciente paciente = pacienteService.buscarPorId(pacienteId, emailUsuarioLogado);
-        Usuario dentista = buscarDentista(emailUsuarioLogado);
+        Usuario dentista = buscarDentistaResponsavelPaciente(paciente, emailUsuarioLogado);
 
         validarReceituarioRequest(request);
         validarDadosDentista(dentista);
@@ -128,6 +129,33 @@ public class DocumentoPdfService {
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao gerar receituário em PDF", e);
+        }
+    }
+
+    // Receituário Controlado
+    public byte[] gerarReceituarioControlado(Long pacienteId, ReceituarioRequest request, String emailUsuarioLogado) {
+        Paciente paciente = pacienteService.buscarPorId(pacienteId, emailUsuarioLogado);
+        Usuario dentista = buscarDentistaResponsavelPaciente(paciente, emailUsuarioLogado);
+
+        validarReceituarioRequest(request);
+        validarDadosDentista(dentista);
+
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            Document document = new Document(PageSize.A4, 0, 0, 0, 0);
+            PdfWriter writer = PdfWriter.getInstance(document, output);
+
+            document.open();
+
+            PdfContentByte canvas = writer.getDirectContent();
+            escreverConteudoReceituarioControlado(canvas, paciente, request, dentista);
+
+            document.close();
+
+            return output.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar receituário controlado em PDF", e);
         }
     }
 
@@ -474,6 +502,280 @@ public class DocumentoPdfService {
         escreverRodape(canvas, rodape);
     }
 
+    // Layout próprio do Receituário Controlado, baseado no modelo físico informado
+    // pelo cliente.
+    private void escreverConteudoReceituarioControlado(
+            PdfContentByte canvas,
+            Paciente paciente,
+            ReceituarioRequest request,
+            Usuario dentista) {
+
+        Font titulo = new Font(Font.HELVETICA, 18, Font.BOLD, Color.BLACK);
+        Font cabecalho = new Font(Font.HELVETICA, 12, Font.BOLD, Color.BLACK);
+        Font normal = new Font(Font.HELVETICA, 9, Font.NORMAL, Color.BLACK);
+        Font normalPequena = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.BLACK);
+        Font negrito = new Font(Font.HELVETICA, 9, Font.BOLD, Color.BLACK);
+        Font nomeDentista = new Font(Font.HELVETICA, 11, Font.BOLD, Color.BLACK);
+        Font rodape = new Font(Font.HELVETICA, 7, Font.BOLD, Color.BLACK);
+
+        escrever(canvas, "RECEITUÁRIO CONTROLE ESPECIAL", titulo, 297, 813, Element.ALIGN_CENTER);
+
+        // Cabeçalho: emitente à esquerda e orientação das vias à direita.
+        desenharBox(canvas, 30, 628, 285, 150);
+        desenharLinhaHorizontal(canvas, 30, 752, 315);
+        escrever(canvas, "IDENTIFICAÇÃO DO EMITENTE", cabecalho, 172, 760, Element.ALIGN_CENTER);
+
+        escrever(canvas, nomeEmitenteReceituarioControlado(dentista), nomeDentista, 172, 730, Element.ALIGN_CENTER);
+        escrever(canvas, linhaProfissionalDentista(dentista), normal, 172, 696, Element.ALIGN_CENTER);
+
+        if (dentista.getEspecialidade() != null && !dentista.getEspecialidade().isBlank()) {
+            escrever(canvas, dentista.getEspecialidade(), normal, 172, 709, Element.ALIGN_CENTER);
+        }
+
+        escrever(canvas, "Rua Doutor Feliciano Sodré, 215", normalPequena, 172, 670, Element.ALIGN_CENTER);
+        escrever(canvas, "Sala 204 - Centro - São Gonçalo - RJ", normalPequena, 172, 654, Element.ALIGN_CENTER);
+        escrever(canvas, contatoEmitenteReceituarioControlado(dentista), normalPequena, 172, 638, Element.ALIGN_CENTER);
+
+        escrever(canvas, "1ª VIA - RETENÇÃO DA FARMÁCIA OU DROGARIA", negrito, 340, 755, Element.ALIGN_LEFT);
+        escrever(canvas, "2ª VIA - ORIENTAÇÃO DO PACIENTE", negrito, 340, 728, Element.ALIGN_LEFT);
+
+        // Paciente e CPF, ambos preenchidos pelo cadastro.
+        float yPaciente = 602;
+        escrever(canvas, "Paciente:", normal, 30, yPaciente, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 88, yPaciente - 4, 280);
+        escrever(canvas, valor(paciente.getNome()), normal, 92, yPaciente, Element.ALIGN_LEFT);
+
+        escrever(canvas, "CPF:", normal, 390, yPaciente, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 420, yPaciente - 4, 145);
+        escrever(canvas, formatarCpfPdf(paciente.getCpf()), normal, 424, yPaciente, Element.ALIGN_LEFT);
+
+        // Endereço propositalmente em branco para preenchimento manual após a
+        // impressão.
+        float yEndereco = 568;
+        escrever(canvas, "Endereço:", normal, 30, yEndereco, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 100, yEndereco - 4, 465);
+        escreverLinha(canvas, 30, yEndereco - 28, 535);
+
+        // Área de prescrição: o texto informado pelo dentista começa logo após o
+        // rótulo.
+        float yPrescricao = 520;
+        escrever(canvas, "Prescrição:", normal, 30, yPrescricao, Element.ALIGN_LEFT);
+
+        float linhaY = 514;
+        for (int i = 0; i < 9; i++) {
+            escreverLinha(canvas, 30, linhaY - (i * 26), 535);
+        }
+
+        escreverPrescricaoControladaEmLinhas(canvas, request.getPrescricao(), normal, 86, linhaY + 5, 430, 9, 26);
+
+        // Data e assinatura.
+        escrever(canvas, "DATA:", negrito, 30, 246, Element.ALIGN_LEFT);
+        escrever(canvas, LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), normal, 74, 246,
+                Element.ALIGN_LEFT);
+
+        escreverLinha(canvas, 330, 254, 218);
+        escrever(canvas, "Assinatura e Carimbo do Emitente", normal, 439, 236, Element.ALIGN_CENTER);
+
+        // Blocos inferiores ajustados para não invadir o rodapé.
+        float boxY = 58;
+        float boxAltura = 175;
+
+        desenharBox(canvas, 30, boxY, 260, boxAltura);
+        desenharLinhaHorizontal(canvas, 30, boxY + boxAltura - 25, 290);
+        escrever(canvas, "IDENTIFICAÇÃO DO COMPRADOR", cabecalho, 160, boxY + boxAltura - 17, Element.ALIGN_CENTER);
+
+        // Nome
+        escrever(canvas, "Nome:", normalPequena, 38, boxY + 132, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 75, boxY + 128, 198);
+
+        escreverLinha(canvas, 38, boxY + 108, 235);
+
+        // Identidade
+        escrever(canvas, "Ident.:", normalPequena, 38, boxY + 88, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 80, boxY + 84, 82);
+
+        escrever(canvas, "Órg. Emissor:", normalPequena, 172, boxY + 88, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 245, boxY + 84, 28);
+
+        // Endereço
+        escrever(canvas, "End.:", normalPequena, 38, boxY + 66, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 70, boxY + 62, 203);
+
+        escreverLinha(canvas, 38, boxY + 45, 235);
+
+        // Cidade
+        escrever(canvas, "Cidade:", normalPequena, 38, boxY + 28, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 84, boxY + 24, 126);
+
+        escrever(canvas, "UF:", normalPequena, 218, boxY + 28, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 238, boxY + 24, 35);
+
+        // Telefone
+        escrever(canvas, "Telefone:", normalPequena, 38, boxY + 10, Element.ALIGN_LEFT);
+        escreverLinha(canvas, 91, boxY + 6, 126);
+
+        desenharBox(canvas, 305, boxY, 260, boxAltura);
+        desenharLinhaHorizontal(canvas, 305, boxY + boxAltura - 25, 565);
+        escrever(canvas, "IDENTIFICAÇÃO DO FORNECEDOR", cabecalho, 435, boxY + boxAltura - 17, Element.ALIGN_CENTER);
+
+        escreverLinha(canvas, 312, boxY + 34, 130);
+        escrever(canvas, "ASSINATURA DO FARMACÊUTICO", normalPequena, 312, boxY + 10, Element.ALIGN_LEFT);
+        escrever(canvas, "DATA: _____/_____/_____", normalPequena, 462, boxY + 10, Element.ALIGN_LEFT);
+
+        escrever(canvas,
+                "Portaria 344 - Art. 52 - Formulário de Receita de Controle Especial - Válida em todo território nacional",
+                rodape, 297, 18, Element.ALIGN_CENTER);
+    }
+
+    private void escreverTextoLongoAlinhadoEsquerda(
+            PdfContentByte canvas,
+            String texto,
+            Font fonte,
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            float entreLinhas) {
+
+        ColumnText ct = new ColumnText(canvas);
+        ct.setSimpleColumn(new Phrase(valor(texto), fonte), x1, y2, x2, y1, entreLinhas, Element.ALIGN_LEFT);
+
+        try {
+            ct.go();
+        } catch (DocumentException e) {
+            throw new RuntimeException("Erro ao escrever texto no receituário controlado", e);
+        }
+    }
+
+    // Escreve a prescrição respeitando as linhas impressas do formulário.
+    // O texto começa logo após o rótulo "Prescrição:" e cada linha digitada
+    // fica posicionada acima da linha horizontal correspondente.
+    private void escreverPrescricaoControladaEmLinhas(
+            PdfContentByte canvas,
+            String texto,
+            Font fonte,
+            float x,
+            float primeiraLinhaY,
+            int limiteCaracteresPorLinha,
+            int maxLinhas,
+            float espacamentoLinhas) {
+
+        List<String> linhas = quebrarTextoPrescricao(valor(texto), limiteCaracteresPorLinha);
+
+        int total = Math.min(linhas.size(), maxLinhas);
+        for (int i = 0; i < total; i++) {
+            escrever(canvas, linhas.get(i), fonte, x, primeiraLinhaY - (i * espacamentoLinhas), Element.ALIGN_LEFT);
+        }
+    }
+
+    private List<String> quebrarTextoPrescricao(String texto, int limiteCaracteresPorLinha) {
+        List<String> linhas = new ArrayList<>();
+
+        if (texto == null || texto.isBlank()) {
+            return linhas;
+        }
+
+        String[] linhasOriginais = texto.replace("\r", "").split("\n");
+
+        for (String linhaOriginal : linhasOriginais) {
+            String linha = linhaOriginal.trim();
+
+            if (linha.isEmpty()) {
+                linhas.add("");
+                continue;
+            }
+
+            while (linha.length() > limiteCaracteresPorLinha) {
+                int corte = linha.lastIndexOf(' ', limiteCaracteresPorLinha);
+                if (corte <= 0) {
+                    corte = limiteCaracteresPorLinha;
+                }
+
+                linhas.add(linha.substring(0, corte).trim());
+                linha = linha.substring(corte).trim();
+            }
+
+            linhas.add(linha);
+        }
+
+        return linhas;
+    }
+
+    private Usuario buscarDentistaResponsavelPaciente(Paciente paciente, String emailUsuarioLogado) {
+        if (paciente != null && paciente.getDentista() != null) {
+            return paciente.getDentista();
+        }
+
+        return buscarDentista(emailUsuarioLogado);
+    }
+
+    private String nomeEmitenteReceituarioControlado(Usuario dentista) {
+        return dentista == null ? "" : valor(dentista.getNome());
+    }
+
+    private String contatoEmitenteReceituarioControlado(Usuario dentista) {
+        if (dentista == null) {
+            return "";
+        }
+
+        String telefone = dentista.getTelefone() == null ? "" : dentista.getTelefone().trim();
+        String email = dentista.getEmail() == null ? "" : dentista.getEmail().trim();
+
+        if (!telefone.isBlank() && !email.isBlank()) {
+            return telefone + " | " + email;
+        }
+
+        if (!telefone.isBlank()) {
+            return telefone;
+        }
+
+        return email;
+    }
+
+    private void desenharBox(PdfContentByte canvas, float x, float y, float largura, float altura) {
+        canvas.setColorStroke(Color.BLACK);
+        canvas.setLineWidth(1f);
+        canvas.rectangle(x, y, largura, altura);
+        canvas.stroke();
+    }
+
+    private void escreverLinha(PdfContentByte canvas, float x, float y, float largura) {
+        canvas.setColorStroke(Color.BLACK);
+        canvas.setLineWidth(0.8f);
+        canvas.moveTo(x, y);
+        canvas.lineTo(x + largura, y);
+        canvas.stroke();
+    }
+
+    private void desenharLinhaHorizontal(PdfContentByte canvas, float x1, float y, float x2) {
+        canvas.setColorStroke(Color.BLACK);
+        canvas.setLineWidth(1f);
+        canvas.moveTo(x1, y);
+        canvas.lineTo(x2, y);
+        canvas.stroke();
+    }
+
+    private String linhaProfissionalDentista(Usuario dentista) {
+        // No Receituário Controlado, esta linha deve exibir somente o CRO.
+        // A profissão/especialidade permanece na linha seguinte, usando
+        // dentista.getEspecialidade().
+        return dentista == null || dentista.getCro() == null ? "" : dentista.getCro().trim();
+    }
+
+    private String formatarCpfPdf(String cpf) {
+        if (cpf == null) {
+            return "";
+        }
+
+        String valor = cpf.replaceAll("\\D", "");
+
+        if (valor.length() != 11) {
+            return cpf;
+        }
+
+        return valor.replaceFirst("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+    }
+
     private void escreverConteudoProntuario(
             PdfContentByte canvas,
             Paciente paciente,
@@ -531,7 +833,7 @@ public class DocumentoPdfService {
         }
 
         if (total > 1) {
-            return "PRONTUÁRIO ODONTOLÓGICO";
+            return "ODONTO PACHECO";
         }
 
         if (Boolean.TRUE.equals(request.getIncluirAnamnese())) {
@@ -801,8 +1103,8 @@ public class DocumentoPdfService {
     }
 
     private void escreverCabecalho(PdfContentByte canvas, Font tituloCabecalho, Font subtitulo) {
-        escrever(canvas, "CONSULTÓRIO ODONTOLÓGICO", tituloCabecalho, 120, 765, Element.ALIGN_LEFT);
-        escrever(canvas, "Cuidando do seu sorriso com saúde e qualidade", subtitulo, 120, 745, Element.ALIGN_LEFT);
+        escrever(canvas, "ODONTO PACHECO", tituloCabecalho, 120, 765, Element.ALIGN_LEFT);
+        escrever(canvas, "Prontuário Odontológico", subtitulo, 120, 745, Element.ALIGN_LEFT);
         desenharIconeDente(canvas, 42, 780);
     }
 

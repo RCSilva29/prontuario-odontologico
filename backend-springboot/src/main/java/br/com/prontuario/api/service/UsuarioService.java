@@ -216,6 +216,10 @@ public class UsuarioService {
             if (request.getCro() == null || request.getCro().isBlank()) {
                 throw new RuntimeException("CRO é obrigatório para dentista");
             }
+
+            if (request.getTelefone() == null || request.getTelefone().isBlank()) {
+                throw new RuntimeException("Telefone é obrigatório para dentista");
+            }
         }
     }
 
@@ -223,10 +227,12 @@ public class UsuarioService {
         if ("DENTISTA".equals(request.getPerfil())) {
             usuario.setEspecialidade(request.getEspecialidade());
             usuario.setCro(request.getCro());
+            usuario.setTelefone(request.getTelefone());
             return;
         }
 
         usuario.setEspecialidade(null);
         usuario.setCro(null);
+        usuario.setTelefone(null);
     }
 }

@@ -56,6 +56,23 @@ public class DocumentoController {
                                 .body(pdf);
         }
 
+        // Receituário Controlado
+        @PostMapping("/pacientes/{id}/receituario-controlado")
+        public ResponseEntity<byte[]> gerarReceituarioControlado(
+                        @PathVariable Long id,
+                        @RequestBody ReceituarioRequest request,
+                        Authentication authentication) {
+
+                byte[] pdf = documentoPdfService.gerarReceituarioControlado(
+                                id,
+                                request,
+                                obterEmailUsuarioLogado(authentication));
+
+                return ResponseEntity.ok()
+                                .headers(criarHeadersPdf("receituario_controlado.pdf"))
+                                .body(pdf);
+        }
+
         @PostMapping("/pacientes/{id}/prontuario")
         public ResponseEntity<byte[]> gerarProntuario(
                         @PathVariable Long id,

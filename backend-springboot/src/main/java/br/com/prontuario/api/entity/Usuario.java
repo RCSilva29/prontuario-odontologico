@@ -49,6 +49,9 @@ public class Usuario {
     @Column(length = 50)
     private String cro;
 
+    @Column(length = 20)
+    private String telefone;
+
     public Boolean getBloqueado() {
         return bloqueado;
     }
